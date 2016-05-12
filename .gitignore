@@ -1,0 +1,5 @@
+fceux*.src*
+libfceux
+EIFGENs
+driver/lib
+*.swp

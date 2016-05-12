@@ -1,0 +1,17 @@
+--- fceux-2.2.2/SConstruct	2013-09-23 15:49:16.000000000 -0400
++++ fceux.src/SConstruct	2016-04-25 19:17:54.657872533 -0400
+@@ -19,11 +19,11 @@
+   BoolVariable('FRAMESKIP', 'Enable frameskipping', 1),
+   BoolVariable('OPENGL',    'Enable OpenGL support', 1),
+   BoolVariable('LUA',       'Enable Lua support', 1),
+-  BoolVariable('GTK', 'Enable GTK2 GUI (SDL only)', 1),
++  BoolVariable('GTK', 'Enable GTK2 GUI (SDL only)', 0),
+   BoolVariable('GTK3', 'Enable GTK3 GUI (SDL only)', 0),
+   BoolVariable('NEWPPU',    'Enable new PPU core', 1),
+-  BoolVariable('CREATE_AVI', 'Enable avi creation support (SDL only)', 1),
+-  BoolVariable('LOGO', 'Enable a logoscreen when creating avis (SDL only)', 1),
++  BoolVariable('CREATE_AVI', 'Enable avi creation support (SDL only)', 0),
++  BoolVariable('LOGO', 'Enable a logoscreen when creating avis (SDL only)', 0),
+   BoolVariable('SYSTEM_LUA','Use system lua instead of static lua provided with fceux', 1),
+   BoolVariable('SYSTEM_MINIZIP', 'Use system minizip instead of static minizip provided with fceux', 0),
+   BoolVariable('LSB_FIRST', 'Least signficant byte first (non-PPC)', 1),
