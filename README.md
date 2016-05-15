@@ -18,6 +18,7 @@ Note: The program is only compatible with Linux at this time.
 	- Use the Makefile:
 		# cd $FCEUX_BP_SRC
 		# make
+	- If a compilation error occured, it is probably a missing C library. Install the missing library and re-execute 'make'.
 	- Start the $FCEUX_BP_SRC/project/fceux-bp.ecf in EiffelStudio
 
 License
