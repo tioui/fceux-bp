@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {FCEUX_EMULATOR}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "A Wrapper to the NES emulator backend (Fceux)"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	FCEUX_EMULATOR
@@ -12,49 +12,64 @@ create
 
 feature {NONE} -- Initialization
 
-	make(a_from_configuration:CONFIGURATION)
+	make(a_configuration:CONFIGURATION)
+			-- Initialization of `Current' using `a_configuration' as `configuration'
 		do
 			has_error := False
-			is_initialized := False
-			configuration := a_from_configuration
+			is_prepared := False
+			configuration := a_configuration
 			create managed_pixel_buffer.make (pixel_buffer_sizeof)
 			create managed_sound_buffer.make (sound_buffer_sizeof)
 			create managed_sound_buffer_size.make (sound_buffer_size_sizeof)
+			create input_buffer.make (4)
 		end
 
 feature -- Access
 
-	initialize
+	prepare
+			-- Initialised the internal NES emulator backend
 		do
-			is_initialized := fceui_initialize
-			has_error := not is_initialized
+			is_prepared := fceui_initialize
+			has_error := not is_prepared
 		end
 
-	is_initialized:BOOLEAN
-
-	emulate
-		require
-			is_initialized
-		local
-			l_skip:INTEGER
-		do
-			if configuration.audio_skip then
-				l_skip := 2
-			elseif configuration.video_skip then
-				l_skip := 1
-			else
-				l_skip := 0
-			end
-			fceui_emulate (managed_pixel_buffer.item, managed_sound_buffer.item, managed_sound_buffer_size.item, l_skip)
-		end
+	is_prepared:BOOLEAN
+			-- Has `prepare' been called
 
 	has_error:BOOLEAN
+			-- An error has occured
+
+	emulate
+			-- Emulate an audio and video frame
+		require
+			Is_Prepared: is_prepared
+		do
+			emulate_frame (False, False)
+		end
+
+	emulate_skip_video
+			-- Emulate an audio frame only
+		require
+			Is_Prepared: is_prepared
+		do
+			emulate_frame (True, False)
+		end
+
+	emulate_skip_audio_video
+			-- Emulate the next frame but does not generate audio or video information
+		require
+			Is_Prepared: is_prepared
+		do
+			emulate_frame (True, True)
+		end
 
 	game_cartrige:detachable GAME_CARTRIGE
+			-- The loaded game
 
 	load_game(a_path:READABLE_STRING_GENERAL)
+			-- Load the game in `a_path' to the `game_cartrige'
 		require
-			is_initialized
+			is_prepared
 		local
 			l_path:PATH
 			l_cartrige_item:POINTER
@@ -73,10 +88,9 @@ feature -- Access
 			-- Disable the input port. `a_port' may be 1 or 2
 			-- and represent the physical ports on the front of the NES
 		require
-			is_initialized
+			is_prepared
 			a_port >= 1 and a_port <= 2
 		do
-			input_buffer := Void
 			fceui_set_input(a_port - 1, Si_none, create {POINTER}, 0)
 		end
 
@@ -84,37 +98,53 @@ feature -- Access
 			-- Disable the input port. `a_port' may be 1 or 2
 			-- and represent the physical ports on the front of the NES
 		require
-			is_initialized
+			is_prepared
 			a_port >= 1 and a_port <= 2
-		local
-			l_input_buffer: MANAGED_POINTER
 		do
-			create l_input_buffer.make (4)
-			fceui_set_input(a_port - 1, Si_gamepad, l_input_buffer.item + (a_port - 1), 0)
-			input_buffer := l_input_buffer
+			fceui_set_input(a_port - 1, Si_gamepad, input_buffer.item + (a_port - 1), 0)
 			fceui_set_input_fc (sifc_none, create {POINTER}, 0)
 		ensure
 			Buffer_Is_Set: attached input_buffer as la_buffer and then la_buffer.count = 4
 		end
 
-	input_buffer:detachable MANAGED_POINTER
+	input_buffer:MANAGED_POINTER
+			-- The memory buffer to place input informations
+			-- For gamepad, each bit represent the state of a button
+			-- (0 for unpressed and 1 for pressed) in that order:
+			-- A, B, Select, Start, Up, Down, Left, Right
+			-- The gamepad 1 used the first byte and gamepad 2
+			-- used the second
 
 	pixel_buffer:POINTER
+			-- The buffer to the pixels of an emulated frame
+			-- NULL if the video frame has been skipped
 		do
 			Result := managed_pixel_buffer.read_pointer (0)
 		end
 
 	sound_buffer:POINTER
+			-- The buffer to the sound samples of an emulated frame
+			-- NULL if the sound frame has been skipped
+			-- Each sample is 4 byte long, but only the first 16 bits
+			-- has data, you can ignore the other 16 bits.
 		do
 			Result := managed_sound_buffer.read_pointer (0)
 		end
 
 	sound_buffer_size:INTEGER
+			-- If an emulated sound frame has been emulated,
+			-- represent the number of samples that has been generated
 		do
 			Result := managed_sound_buffer_size.read_integer_32 (0)
 		end
 
 	video_information:TUPLE[is_pal:BOOLEAN; first_scan_line, last_scan_line:INTEGER]
+			-- Some informations about emulateor video system. If `is_pal' if `True',
+			-- The game is emulated using PAL standard and NTSC if `False'.
+			-- `Current' emulate only the lines between `first_scan_line' and `last_scan_line'
+			-- of a video frame.
+		require
+			Is_Prepared: is_prepared
 		local
 			l_is_pal:BOOLEAN
 			l_first_scan_line, l_last_scan_line:INTEGER
@@ -124,6 +154,9 @@ feature -- Access
 		end
 
 	set_sound_volume(a_volume:NATURAL_32)
+			-- Set the master sound volume to `a_volume'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -131,6 +164,9 @@ feature -- Access
 		end
 
 	set_sound_quality(a_quality:INTEGER)
+			-- Set the sound quality to `a_quality'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -138,6 +174,9 @@ feature -- Access
 		end
 
 	set_sound_rate(a_rate:INTEGER)
+			-- Set the sound sample rate to `a_rate'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -145,6 +184,9 @@ feature -- Access
 		end
 
 	set_triangle_volume(a_volume:NATURAL_32)
+			-- Set the volume of the triangle sound channel to `a_volume'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -152,6 +194,9 @@ feature -- Access
 		end
 
 	set_square1_volume(a_volume:NATURAL_32)
+			-- Set the volume of the first square sound channel to `a_volume'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -159,6 +204,9 @@ feature -- Access
 		end
 
 	set_square2_volume(a_volume:NATURAL_32)
+			-- Set the volume of the second square sound channel to `a_volume'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -166,6 +214,9 @@ feature -- Access
 		end
 
 	set_noise_volume(a_volume:NATURAL_32)
+			-- Set the volume of the noise sound channel to `a_volume'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -173,21 +224,56 @@ feature -- Access
 		end
 
 	set_pcm_volume(a_volume:NATURAL_32)
+			-- Set the volume of the PCM sound channel to `a_volume'
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
 			"FCEUI_SetPCMVolume($a_volume)"
 		end
 
+	desired_fps:NATURAL_32
+			-- The number of frame per second that must be used in the system
+		require
+			Is_Prepared: is_prepared
+		do
+			Result := fceui_get_desired_fps.to_natural_32
+		end
+
 feature {NONE} -- Implementation
 
+	emulate_frame(a_skip_video, a_skip_audio:BOOLEAN)
+			-- Emulate one frame. If `a_skip_video' is set, does not generate
+			-- the image frame. If `a_skip_audio' is set, does not generate the
+			-- audio and video frame
+		require
+			is_prepared
+			Skip_Consistant: a_skip_audio implies a_skip_video
+		local
+			l_skip:INTEGER
+		do
+			if a_skip_audio and configuration.audio_skip then
+				l_skip := 2
+			elseif a_skip_video and configuration.video_skip then
+				l_skip := 1
+			else
+				l_skip := 0
+			end
+			fceui_emulate (managed_pixel_buffer.item, managed_sound_buffer.item, managed_sound_buffer_size.item, l_skip)
+		end
+
 	managed_pixel_buffer:MANAGED_POINTER
+			-- Internal representation of `pixel_buffer'
 
 	managed_sound_buffer:MANAGED_POINTER
+			-- Internal representation of `sound_buffer'
 
 	managed_sound_buffer_size:MANAGED_POINTER
+			-- Internal representation of `sound_buffer_size'
 
 	configuration:CONFIGURATION
+			-- Every configurationa of the system
 
 feature {NONE} -- C external
 
@@ -213,6 +299,8 @@ feature {NONE} -- C external
 		end
 
 	fceui_get_current_video_system(a_first_scan_line, a_last_scan_line:POINTER):BOOLEAN
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -221,6 +309,8 @@ feature {NONE} -- C external
 
 
 	fceui_kill
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -228,6 +318,8 @@ feature {NONE} -- C external
 		end
 
 	fceui_emulate(a_pixel_buffer, a_sound_buffer, a_sound_buffer_size:POINTER; a_skip:INTEGER)
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -235,6 +327,8 @@ feature {NONE} -- C external
 		end
 
 	fceui_LoadGame(a_name:POINTER; a_overwrite_video_mode, a_silent:BOOLEAN):POINTER
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -249,6 +343,8 @@ feature {NONE} -- C external
 		end
 
 	fceui_set_input(a_port, a_type:INTEGER; ptr:POINTER; a_attrib:INTEGER)
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
@@ -256,10 +352,21 @@ feature {NONE} -- C external
 		end
 
 	fceui_set_input_fc(a_type:INTEGER; ptr:POINTER; a_attrib:INTEGER)
+		require
+			Is_Prepared: is_prepared
 		external
 			"C++ inline use <driver.h>"
 		alias
 			"FCEUI_SetInputFC(static_cast<ESIFC>($a_type), $ptr, $a_attrib)"
+		end
+
+	fceui_get_desired_fps:NATURAL_64
+		require
+			Is_Prepared: is_prepared
+		external
+			"C++ inline use <driver.h>"
+		alias
+			"FCEUI_GetDesiredFPS()"
 		end
 
 	Si_none:INTEGER

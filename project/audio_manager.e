@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {AUDIO_MANAGER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Managed audio the processing"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	AUDIO_MANAGER
@@ -16,6 +16,8 @@ create
 feature {NONE} -- Initialization
 
 	make(a_configuration:CONFIGURATION; a_emulator:FCEUX_EMULATOR)
+			-- Initialization of `Current' using `a_emulator' as `emulator'
+			-- and `a_configuration' as `configuration'
 		do
 			configuration := a_configuration
 			emulator := a_emulator
@@ -26,7 +28,8 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	initialize
+	prepare
+			-- Set the `emulator' sound properties
 		do
 			emulator.set_sound_volume (configuration.sound_volume)
 			emulator.set_sound_quality (configuration.sound_quality)
@@ -38,12 +41,13 @@ feature -- Access
 			emulator.set_pcm_volume (configuration.sound_pcm_volume)
 		end
 
-	add_sound(a_buffer:POINTER; a_count: INTEGER_32)
+	play_sound(a_buffer:POINTER; a_count: INTEGER_32)
+			-- Play the sont pointed by `a_buffer' of len `a_count'
 		do
 			print("Count: " + a_count.out)
-			sound.add_sample (a_buffer, a_count)
+			sound.set_sample (a_buffer, a_count)
 			if source.sound_queued.count = 0 then
-				source.queue_sound (sound)
+				source.queue_sound_infinite_loop (sound)
 			end
 			if not source.is_playing then
 				source.play
@@ -54,10 +58,15 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	sound: STREAM_SOUND
+			-- The sound streamer
 
 	source:AUDIO_SOURCE
+			-- The source of the audio
 
 	emulator:FCEUX_EMULATOR
+			-- The Fceux emulator wrapper
 
 	configuration:CONFIGURATION
+			-- The application coufiguration container
+
 end

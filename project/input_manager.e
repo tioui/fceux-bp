@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {INPUT_MANAGER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Every emulation input mnagement"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	INPUT_MANAGER
@@ -13,6 +13,7 @@ create
 feature {NONE} -- Initialization
 
 	make(a_configuration:CONFIGURATION)
+			-- Initialization of `Current' using `a_configuration' as `configuration'
 		do
 			configuration := a_configuration
 			create {LINKED_LIST[KEYBOARD_STATUS]}keyboard_status.make
@@ -29,17 +30,25 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	on_key_pressed(a_key_state: GAME_KEY)
+	on_key_pressed(a_key: GAME_KEY)
+			-- When `a_key' has been pressed
 		do
-			keyboard_status.do_all (agent {KEYBOARD_STATUS}.on_pressed(a_key_state))
+			keyboard_status.do_all (agent {KEYBOARD_STATUS}.on_pressed(a_key))
 		end
 
-	on_key_released(a_key_state: GAME_KEY)
+	on_key_released(a_key: GAME_KEY)
+			-- When `a_key' has been repeased
 		do
-			keyboard_status.do_all (agent {KEYBOARD_STATUS}.on_released(a_key_state))
+			keyboard_status.do_all (agent {KEYBOARD_STATUS}.on_released(a_key))
 		end
-		
+
 	update(a_buffer:MANAGED_POINTER)
+			-- Change the data in `a_buffer' to represent `Current'
+			-- For gamepad, each bit represent the state of a button
+			-- (0 for unpressed and 1 for pressed) in that order:
+			-- A, B, Select, Start, Up, Down, Left, Right
+			-- The gamepad 1 used the first byte and gamepad 2
+			-- used the second
 		local
 			l_mask:NATURAL_8
 			l_index:INTEGER
@@ -61,7 +70,9 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	keyboard_status:LIST[KEYBOARD_STATUS]
+			-- Each {BUTTON_STATUS} representing that is managed a keyboard key
 
 	configuration:CONFIGURATION
+			-- Every configuration of the system
 
 end

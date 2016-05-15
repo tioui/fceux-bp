@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {KEYBOARD_VIRTUAL_STATUS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "A {BUTTON_STATUS} that is managed by a virtual keyboard button"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	KEYBOARD_VIRTUAL_STATUS
@@ -14,11 +14,13 @@ inherit
 		end
 
 create
-	make
+	make_with_name,
+	make_with_code
 
 feature {NONE} -- Implementation
 
-	make(a_name:READABLE_STRING_GENERAL)
+	make_with_name(a_name:READABLE_STRING_GENERAL)
+			-- Initialisation of `Current' using `a_name' as button name
 		local
 			l_key:GAME_KEY
 		do
@@ -46,11 +48,8 @@ feature -- Access
 
 	manifest:READABLE_STRING_GENERAL
 			-- <Precursor>
-		local
-			l_key:GAME_KEY
 		do
-			create l_key.make_from_virtual_code (key_code)
-			Result := manifest_keyboard_virtual + l_key.unicode_out
+			Result := manifest_keyboard_virtual + key_code.out.as_string_32
 		end
 
 end

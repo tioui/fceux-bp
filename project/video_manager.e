@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {VIDEO_MANAGER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Manage every emulated video frame and the video system"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	VIDEO_MANAGER
@@ -17,7 +17,8 @@ create
 feature {NONE} -- Initialization
 
 	make(a_configuration:CONFIGURATION; a_emulator: FCEUX_EMULATOR)
-			-- <Precursor>
+			-- Initialization of `Current' using `a_configuration' as `configuration'
+			-- and `a_emulator' as `emulator'
 		local
 			l_window_builder:GAME_WINDOW_SURFACED_BUILDER
 			l_pixel_format:GAME_PIXEL_FORMAT
@@ -41,8 +42,10 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	on_video_change:ACTION_SEQUENCE[TUPLE[is_pal:BOOLEAN; first_scan_line, last_scan_line:INTEGER]]
+			-- Actions to be launched when the internal video system has been modified
 
 	set_palette(a_index, a_red, a_green, a_blue:NATURAL_8)
+			-- <Precursor>
 		do
 			if attached surface.pixel_format.color_palette as la_palette then
 				la_palette.at (a_index) := create {GAME_COLOR}.make_rgb (a_red, a_green, a_blue)
@@ -50,6 +53,7 @@ feature -- Access
 		end
 
 	get_palette(a_index:NATURAL_8):TUPLE[red, green, blue:NATURAL_8]
+			-- <Precursor>
 		local
 			l_color:GAME_COLOR_READABLE
 		do
@@ -62,6 +66,7 @@ feature -- Access
 		end
 
 	draw_next_frame(a_buffer:POINTER)
+			-- <Precursor>
 		do
 			surface.lock
 			across first_scan_line |..| last_scan_line as la_index loop
@@ -110,6 +115,7 @@ feature -- Access
 		end
 
 	video_has_changed
+			-- <Precursor>
 		local
 			l_video_informations:TUPLE[is_pal:BOOLEAN; first_scan_line, last_scan_line:INTEGER]
 		do
@@ -121,26 +127,36 @@ feature -- Access
 		end
 
 	window:GAME_WINDOW_SURFACED
+			-- The {GAME_WINDOW} to draw the scene
 
 	surface:GAME_SURFACE
+			-- An palleted surface
 
 feature {NONE} -- Implementation
 
 	configuration:CONFIGURATION
+			-- Every configurations of the system
 
 	emulator: FCEUX_EMULATOR
+			-- The NES emulator backend
 
 	first_scan_line, last_scan_line:INTEGER
+			-- The range of lines to draw in the `window'
 
 	is_pal:BOOLEAN
+			-- Is `Current' in the PAL (`True') format or NTSC (`False')
 
 	optimied_surface:GAME_SURFACE
+			-- A `window' optimised surface
 
 	ratio_destination_x, ratio_destination_y:INTEGER
+			-- The start of the drawing destination when the ratio has to be keeped
 
 	ratio_destination_width, ratio_destination_height:INTEGER
+			-- The dimension of the drawing destination when the ratio has to be keeped
 
 	ratio_old_window_width, ratio_old_window_height:INTEGER
+			-- The dimension of the `window' when drawing the preeceding video frame
 
 
 end

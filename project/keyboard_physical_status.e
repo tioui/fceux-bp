@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {KEYBOARD_HARDWARE_STATUS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "A {BUTTON_STATUS} that is managed by a physical keyboard button"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
-	KEYBOARD_HARDWARE_STATUS
+	KEYBOARD_PHYSICAL_STATUS
 
 inherit
 	KEYBOARD_STATUS

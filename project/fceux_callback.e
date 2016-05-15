@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {FCEUX_CALLBACK}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Features launched by the Fceux emulator"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 deferred class
 	FCEUX_CALLBACK
@@ -13,6 +13,7 @@ inherit
 feature {NONE} -- Implementation
 
 	make(a_video_manager:FCEUX_VIDEO_MANAGER)
+			-- Initialization of `Current' using `a_video_manager' as `video_manager'
 		do
 			video_manager := a_video_manager
 			set_eiffel_callback_object(Current);
@@ -21,6 +22,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	video_manager:FCEUX_VIDEO_MANAGER
+			-- Used to manage image frames
 
 	dispose
 			-- <Precursor>
@@ -29,16 +31,19 @@ feature {NONE} -- Implementation
 		end
 
 	show_message(a_message:STRING_8)
+			-- Show a general message on the screen
 		deferred
 		end
 
 	show_error(a_message:STRING_8)
+			-- Show an error message on the screen
 		deferred
 		end
 
 feature {NONE} -- C externals
 
 	set_eiffel_callback_object(a_object:FCEUX_CALLBACK)
+			-- Start the C callback system
 		external
 			"C++ inline use <bpdriver.h>"
 		alias
@@ -46,6 +51,7 @@ feature {NONE} -- C externals
 		end
 
 	unset_eiffel_callback_object
+			-- Stop the C callback system
 		external
 			"C++ inline use <bpdriver.h>"
 		alias
@@ -55,11 +61,13 @@ feature {NONE} -- C externals
 feature {NONE} -- C callback
 
 	fceud_video_changed
+			-- The video system has a significately important change that should be taken into account
 		do
 			video_manager.video_has_changed
 		end
 
 	fceud_print_error(a_message_pointer:POINTER)
+			-- An error launched from the emulator
 		local
 			l_c_message:C_STRING
 		do
@@ -68,6 +76,7 @@ feature {NONE} -- C callback
 		end
 
 	fceud_message(a_message_pointer:POINTER)
+			-- A general message launched from the emulator
 		local
 			l_c_message:C_STRING
 		do
@@ -76,11 +85,14 @@ feature {NONE} -- C callback
 		end
 
 	fceud_set_palette(a_index, a_red, a_green, a_blue:NATURAL_8)
+			-- Change the color at `a_index' in the system color palette to (`a_red', `a_green', `a_blue')
 		do
 			video_manager.set_palette (a_index, a_red, a_green, a_blue)
 		end
 
 	fceud_get_palette(a_index:NATURAL_8; a_red, a_green, a_blue:POINTER)
+			-- Retreive the color at `a_index' in the system color palette
+			-- Must put the result in the pointers `a_red', `a_green', `a_blue'
 		local
 			l_color:TUPLE[red, green, blue:NATURAL_8]
 			l_managed_pointer:MANAGED_POINTER

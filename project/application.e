@@ -1,7 +1,8 @@
 note
-	description: "project application root class"
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "A NES (Famicom) emulator based on Fceux."
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	APPLICATION

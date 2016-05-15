@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {STREAM_SOUND}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "An {AUDIO_SOUND} that stream NES emulated sound frame"
+	author: "Louis Marchand"
+	date: "Sat, 14 May 2016 01:07:03 +0000"
+	revision: "0.1"
 
 class
 	STREAM_SOUND
@@ -16,11 +16,9 @@ create
 feature {NONE} -- Initialization
 
 	make(a_frequency:INTEGER)
+			-- Initialization of `Current' using `a_frequency' as `frequency'
 		do
 			frequency := a_frequency
-			create buffer.make (Buffer_size)
-			buffer_tail := 0
-			buffer_head := 0
 			open
 		end
 
@@ -28,18 +26,27 @@ feature {AUDIO_SOURCE}
 
 	fill_buffer(a_buffer:POINTER;a_max_length:INTEGER)
 			-- <Precursor>
+		local
+			l_count:INTEGER
+			l_managed_source_buffer, l_managed_destination_buffer:MANAGED_POINTER
 		do
-			if buffer_tail >= buffer_head then
-				last_buffer_size := buffer_tail - buffer_head
+			if not is_buffer_managed then
+				l_count := (buffer_count.min (a_max_length // byte_per_buffer_sample) - 1)
+				create l_managed_source_buffer.share_from_pointer (buffer, buffer_count * 4)
+				create l_managed_destination_buffer.share_from_pointer (a_buffer, a_max_length)
+				across
+					0 |..| l_count as la_index
+				loop
+					l_managed_destination_buffer.put_integer_16 (
+													l_managed_source_buffer.read_integer_16 (
+															(la_index.item * byte_per_buffer_sample * 2)),
+													la_index.item * byte_per_buffer_sample
+												)
+				end
+				last_buffer_size := (l_count + 1) * byte_per_buffer_sample
+				is_buffer_managed := True
 			else
-				last_buffer_size := buffer_size - buffer_head
-			end
-			if a_max_length < last_buffer_size then
-				last_buffer_size := a_max_length
-			end
-			if last_buffer_size > 0 then
-				a_buffer.memory_copy (buffer.item + buffer_head, last_buffer_size)
-				buffer_head := (buffer_head + last_buffer_size) \\ buffer_size
+				last_buffer_size := 0
 			end
 		end
 
@@ -52,30 +59,11 @@ feature {AUDIO_SOURCE}
 
 feature --Access
 
-	add_sample(a_buffer:POINTER; a_count:INTEGER)
-		local
-			l_index:INTEGER
-			l_next_buffer_tail:INTEGER
-			l_managed_pointer:MANAGED_POINTER
-			l_stop:BOOLEAN
+	set_sample(a_buffer:POINTER; a_count:INTEGER)
 		do
-			create l_managed_pointer.share_from_pointer (a_buffer, a_count * 4)
-			from
-				l_index := 0
-				l_stop := False
-			until
-				l_index >= a_count or
-				l_stop
-			loop
-				l_next_buffer_tail := (buffer_tail + byte_per_buffer_sample) \\ Buffer_size
-				if l_next_buffer_tail /= buffer_head then
-					buffer.put_integer_16 (l_managed_pointer.read_integer_16 (l_index * 2) , buffer_tail)
-					buffer_tail := l_next_buffer_tail
-				else
-					l_stop := True
-				end
-				l_index := l_index + 1
-			end
+			buffer := a_buffer
+			buffer_count := a_count
+			is_buffer_managed := False
 		end
 
 	channel_count:INTEGER
@@ -124,12 +112,13 @@ feature --Access
 
 feature {NONE} -- Implementation
 
-	buffer:MANAGED_POINTER
+	buffer:POINTER
+			-- The last audio samples frame to play
 
-	buffer_head:INTEGER
+	buffer_count:INTEGER
+			-- The number of sample in the `buffer'
 
-	buffer_tail:INTEGER
-
-	Buffer_size:INTEGER = 65536
+	is_buffer_managed:BOOLEAN
+			-- Is `buffer' already played
 
 end
