@@ -7,28 +7,26 @@ note
 deferred class
 	FCEUX_CALLBACK
 
-inherit
-	DISPOSABLE
-
 feature {NONE} -- Implementation
 
 	make(a_video_manager:FCEUX_VIDEO_MANAGER)
 			-- Initialization of `Current' using `a_video_manager' as `video_manager'
 		do
 			video_manager := a_video_manager
-			set_eiffel_callback_object(Current);
+			set_eiffel_driver_callback_object(Current);
+		end
+
+feature -- Acess
+
+	close
+		do
+			unset_eiffel_driver_callback_object
 		end
 
 feature {NONE} -- Implementation
 
 	video_manager:FCEUX_VIDEO_MANAGER
 			-- Used to manage image frames
-
-	dispose
-			-- <Precursor>
-		do
-			unset_eiffel_callback_object
-		end
 
 	show_message(a_message:STRING_8)
 			-- Show a general message on the screen
@@ -42,20 +40,20 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- C externals
 
-	set_eiffel_callback_object(a_object:FCEUX_CALLBACK)
+	set_eiffel_driver_callback_object(a_object:FCEUX_CALLBACK)
 			-- Start the C callback system
 		external
 			"C++ inline use <bpdriver.h>"
 		alias
-			"set_eiffel_callback_object($a_object)"
+			"set_eiffel_driver_callback_object($a_object)"
 		end
 
-	unset_eiffel_callback_object
+	unset_eiffel_driver_callback_object
 			-- Stop the C callback system
 		external
 			"C++ inline use <bpdriver.h>"
 		alias
-			"unset_eiffel_callback_object()"
+			"unset_eiffel_driver_callback_object()"
 		end
 
 feature {NONE} -- C callback

@@ -12,9 +12,9 @@ extern bool turbo;
 
 extern int closeFinishedMovie;
 
-void unset_eiffel_callback_object(void);
+void unset_eiffel_driver_callback_object(void);
 
-void set_eiffel_callback_object(EIF_OBJECT object);
+void set_eiffel_driver_callback_object(EIF_OBJECT object);
 
 #endif
 

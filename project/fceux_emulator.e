@@ -233,12 +233,12 @@ feature -- Access
 			"FCEUI_SetPCMVolume($a_volume)"
 		end
 
-	desired_fps:NATURAL_32
+	desired_fps:REAL_64
 			-- The number of frame per second that must be used in the system
 		require
 			Is_Prepared: is_prepared
 		do
-			Result := fceui_get_desired_fps.to_natural_32
+			Result := fceui_get_desired_fps.to_natural_32 / 256 / 65536
 		end
 
 feature {NONE} -- Implementation
@@ -259,6 +259,9 @@ feature {NONE} -- Implementation
 				l_skip := 1
 			else
 				l_skip := 0
+			end
+			if l_skip > 0 then
+				managed_pixel_buffer.put_pointer (create {POINTER}, 0)
 			end
 			fceui_emulate (managed_pixel_buffer.item, managed_sound_buffer.item, managed_sound_buffer_size.item, l_skip)
 		end

@@ -1,4 +1,4 @@
-all: libfceux/lib/libfceux.a driver/lib/bpdriver.o
+all: libfceux/lib/libfceux.a Clib/lib/bpdriver.o Clib/lib/bpaudio.o
 
 libfceux/include/types.h: libfceux/lib/libfceux.a
 
@@ -14,6 +14,10 @@ libfceux/lib/libfceux.a: fceux-*.src.tar.gz
 	cp -p fceux.src/src/utils/*.h ./libfceux/include/utils/
 	mv fceux.src/libfceux.a ./libfceux/lib
 
-driver/lib/bpdriver.o: libfceux/include/types.h driver/src/bpdriver.c driver/include/bpdriver.h
-	mkdir -p driver/lib
-	c++ -odriver/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c driver/src/bpdriver.c
+Clib/lib/bpdriver.o: libfceux/include/types.h Clib/src/bpdriver.cpp Clib/include/bpdriver.h
+	mkdir -p Clib/lib
+	c++ -oClib/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c Clib/src/bpdriver.cpp
+
+Clib/lib/bpaudio.o: Clib/src/bpaudio.c Clib/include/bpaudio.h
+	mkdir -p Clib/lib
+	gcc -oClib/lib/bpaudio.o -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c Clib/src/bpaudio.c `sdl2-config --cflags`

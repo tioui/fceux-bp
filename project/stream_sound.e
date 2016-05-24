@@ -29,6 +29,7 @@ feature {AUDIO_SOURCE}
 		local
 			l_count:INTEGER
 			l_managed_source_buffer, l_managed_destination_buffer:MANAGED_POINTER
+			l_sample:INTEGER_16
 		do
 			if not is_buffer_managed then
 				l_count := (buffer_count.min (a_max_length // byte_per_buffer_sample) - 1)
@@ -37,9 +38,10 @@ feature {AUDIO_SOURCE}
 				across
 					0 |..| l_count as la_index
 				loop
+					l_sample := l_managed_source_buffer.read_integer_16 (
+															(la_index.item * byte_per_buffer_sample * 2))
 					l_managed_destination_buffer.put_integer_16 (
-													l_managed_source_buffer.read_integer_16 (
-															(la_index.item * byte_per_buffer_sample * 2)),
+													l_sample,
 													la_index.item * byte_per_buffer_sample
 												)
 				end

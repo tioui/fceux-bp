@@ -6,17 +6,17 @@ bool turbo = false;
 
 int closeFinishedMovie = 0;
 
-EIF_OBJECT eiffel_callback_object;
+EIF_OBJECT eiffel_driver_callback_object;
 
 /**
  * Set the correct value for the callback system
  *
  * @param object The Eiffel object that will receive the callback
  */
-void unset_eiffel_callback_object()
+void unset_eiffel_driver_callback_object()
 {
-    eif_wean(eiffel_callback_object);
-    eiffel_callback_object = NULL;
+    eif_wean(eiffel_driver_callback_object);
+    eiffel_driver_callback_object = NULL;
 }
 
 /**
@@ -24,21 +24,21 @@ void unset_eiffel_callback_object()
  *
  * @param object The Eiffel object that will receive the callback
  */
-void set_eiffel_callback_object(EIF_OBJECT object)
+void set_eiffel_driver_callback_object(EIF_OBJECT object)
 {
-    eiffel_callback_object = eif_adopt(object);
+    eiffel_driver_callback_object = eif_adopt(object);
 }
 
 void FCEUD_SetPalette(uint8 index,uint8 r,uint8 g,uint8 b)
 {
     EIF_PROCEDURE ep;
     EIF_TYPE_ID tid;
-    if (eiffel_callback_object){
-        tid = eif_type(eiffel_callback_object);
+    if (eiffel_driver_callback_object){
+        tid = eif_type(eiffel_driver_callback_object);
         if (tid != EIF_NO_TYPE){
             ep = eif_procedure ("fceud_set_palette", tid);
             if(ep != NULL){
-                (ep) (eif_access(eiffel_callback_object), index, r, g, b);
+                (ep) (eif_access(eiffel_driver_callback_object), index, r, g, b);
             }else{
                 eif_panic(
                         "Feature `fceud_set_palette' of class"
@@ -58,12 +58,12 @@ void FCEUD_GetPalette(uint8 index, uint8 *r, uint8 *g, uint8 *b)
 {
     EIF_PROCEDURE ep;
     EIF_TYPE_ID tid;
-    if (eiffel_callback_object){
-        tid = eif_type(eiffel_callback_object);
+    if (eiffel_driver_callback_object){
+        tid = eif_type(eiffel_driver_callback_object);
         if (tid != EIF_NO_TYPE){
             ep = eif_procedure ("fceud_get_palette", tid);
             if(ep != NULL){
-                (ep) (eif_access(eiffel_callback_object), index, r, g, b);
+                (ep) (eif_access(eiffel_driver_callback_object), index, r, g, b);
             }else{
                 eif_panic(
                         "Feature `fceud_get_palette' of class"
@@ -83,12 +83,12 @@ void FCEUD_PrintError(const char *s)
 {
     EIF_PROCEDURE ep;
     EIF_TYPE_ID tid;
-    if (eiffel_callback_object){
-        tid = eif_type(eiffel_callback_object);
+    if (eiffel_driver_callback_object){
+        tid = eif_type(eiffel_driver_callback_object);
         if (tid != EIF_NO_TYPE){
             ep = eif_procedure ("fceud_print_error", tid);
             if(ep != NULL){
-                (ep) (eif_access(eiffel_callback_object), s);
+                (ep) (eif_access(eiffel_driver_callback_object), s);
             }else{
                 eif_panic(
                         "Feature `fceud_print_error' of class"
@@ -108,12 +108,12 @@ void FCEUD_Message(const char *s)
 {
     EIF_PROCEDURE ep;
     EIF_TYPE_ID tid;
-    if (eiffel_callback_object){
-        tid = eif_type(eiffel_callback_object);
+    if (eiffel_driver_callback_object){
+        tid = eif_type(eiffel_driver_callback_object);
         if (tid != EIF_NO_TYPE){
             ep = eif_procedure ("fceud_message", tid);
             if(ep != NULL){
-                (ep) (eif_access(eiffel_callback_object), s);
+                (ep) (eif_access(eiffel_driver_callback_object), s);
             }else{
                 eif_panic(
                         "Feature `fceud_message' of class"
@@ -208,12 +208,12 @@ void FCEUD_VideoChanged()
 {
     EIF_PROCEDURE ep;
     EIF_TYPE_ID tid;
-    if (eiffel_callback_object){
-        tid = eif_type(eiffel_callback_object);
+    if (eiffel_driver_callback_object){
+        tid = eif_type(eiffel_driver_callback_object);
         if (tid != EIF_NO_TYPE){
             ep = eif_procedure ("fceud_video_changed", tid);
             if(ep != NULL){
-                (ep) (eif_access(eiffel_callback_object));
+                (ep) (eif_access(eiffel_driver_callback_object));
             }else{
                 eif_panic(
                         "Feature `fceud_video_changed' of class"
@@ -417,5 +417,6 @@ unsigned int *GetKeyboard(void)
     printf("Not done: GetKeyboard\n");
     return NULL;
 }
+
 
 /* vi: set ts=4 sw=4 expandtab: */

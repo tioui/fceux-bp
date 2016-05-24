@@ -84,12 +84,13 @@ feature -- Access
 			end
 			emulator.set_input_gamepad (configuration.buttons.count)
 			game_library.quit_signal_actions.extend (agent on_quit)
-			game_library.iteration_actions.extend (agent on_iteration)
 			video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
 			video_manager.window.key_released_actions.extend (agent on_key_released)
 			old_timestamp := game_library.time_since_create
-			game_library.set_iteration_per_second (emulator.desired_fps.bit_shift_right (24))
-			game_library.launch
+			desired_fps_delta :=  (1000 / emulator.desired_fps).floor.to_natural_32
+			run_game
+			audio_manager.close
+			driver.close
 		end
 
 feature {NONE} -- Implementation
@@ -110,30 +111,70 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	on_iteration(a_timestamp:NATURAL)
-			-- at each game iteration
+	run_game
+		local
+			l_timestamp:NATURAL_32
 		do
-			print("FPS: " + (1000/(a_timestamp - old_timestamp)).out + "%N")
-			old_timestamp := a_timestamp
-			emulator.emulate
-			if not emulator.pixel_buffer.is_default_pointer then
-				video_manager.draw_next_frame (emulator.pixel_buffer)
-			else
-				print("Skipping frame!%N")
+			from
+				must_quit := False
+				next_frame := game_library.time_since_create
+			until
+				must_quit
+			loop
+
+
+				print("Next Frame: " + next_frame.out + "%N")
+				print("FPS: " + (1000 / (l_timestamp - fps_counter)).out + "%N")
+				fps_counter := l_timestamp
+				game_library.update_events
+				if attached emulator.input_buffer as la_buffer then
+					input_manager.update(la_buffer)
+				end
+				if game_library.time_since_create > (next_frame + (desired_fps_delta * 2)) then
+					emulator.emulate_skip_audio_video
+					print("Skipping audio and video frame%N")
+				elseif game_library.time_since_create > (next_frame + desired_fps_delta) then
+					emulator.emulate_skip_video
+					print("Skipping video frame%N")
+				else
+					emulator.emulate
+				end
+				audio_manager.play_sound (emulator.sound_buffer, emulator.sound_buffer_size)
+				from
+				until
+					game_library.time_since_create > (next_frame + desired_fps_delta)
+				loop
+				end
+				next_frame := next_frame + desired_fps_delta
+				if not emulator.pixel_buffer.is_default_pointer then
+					video_manager.draw_next_frame (emulator.pixel_buffer)
+				end
+				l_timestamp := game_library.time_since_create
+				if l_timestamp < (next_frame + (desired_fps_delta // 2)) then
+					game_library.delay ((next_frame + (desired_fps_delta // 2)) - l_timestamp)
+				end
 			end
-			if attached emulator.input_buffer as la_buffer then
-				input_manager.update(la_buffer)
-			end
-			audio_manager.play_sound (emulator.sound_buffer, emulator.sound_buffer_size)
 		end
+
+	fps_counter:NATURAL_32
+
+
+	next_frame:NATURAL_32
+			-- The Timestamp to play the next frame
+
+	desired_fps_delta:NATURAL_32
+			-- The number of milliseconds between two frames
 
 	old_timestamp:NATURAL_32
 			-- Temporary: Used to show FPS
 
+	must_quit:BOOLEAN
+			-- The game must stop
+
 	on_quit(a_timestamp:NATURAL)
 			-- When the user close the application
 		do
-			game_library.stop
+			must_quit := True
 		end
 
 	initialize_base_directory

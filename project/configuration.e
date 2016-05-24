@@ -104,6 +104,9 @@ feature -- Access
 	sound_rate:INTEGER
 			-- The frequency of the sound samples
 
+	sound_buffer_size:INTEGER
+			-- The number of millisecond of sound sample to put in the sound buffer
+
 	sound_volume:NATURAL_32
 			-- The master sound volume
 
