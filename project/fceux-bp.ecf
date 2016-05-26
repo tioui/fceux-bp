@@ -14,7 +14,6 @@
 		<external_cflag value="-Wno-write-strings"/>
 		<external_object location="${FCEUX_BP_SRC}/libfceux/lib/libfceux.a"/>
 		<external_object location="${FCEUX_BP_SRC}/Clib/lib/bpdriver.o"/>
-		<external_object location="${FCEUX_BP_SRC}/Clib/lib/bpaudio.o"/>
 		<external_linker_flag value="`pkg-config --libs lua5.1`"/>
 		<external_linker_flag value="`pkg-config --libs zlib`"/>
 		<external_linker_flag value="-Wno-write-strings"/>

@@ -1,5 +1,5 @@
 fceux*.src*
 libfceux
 EIFGENs
-driver/lib
+Clib/lib
 *.swp
