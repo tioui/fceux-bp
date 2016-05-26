@@ -76,7 +76,6 @@ feature -- Access
 		do
 			emulator.load_game ("/home/louis/Documents/Super Mario Bros 3 (U) (PRG 0).nes")
 --			emulator.load_game ("/home/louis/Documents/Super Mario Bros (E).nes")
-			audio_manager.prepare
 			l_index := 1
 			across configuration.buttons as la_buttons loop
 				emulator.set_input_gamepad (l_index)
@@ -87,9 +86,9 @@ feature -- Access
 			video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
 			video_manager.window.key_released_actions.extend (agent on_key_released)
 			old_timestamp := game_library.time_since_create
-			desired_fps_delta :=  (1000 / emulator.desired_fps).floor.to_natural_32
+			desired_fps_delta :=  1000 / emulator.desired_fps
+			audio_manager.prepare(desired_fps_delta)
 			run_game
-			audio_manager.close
 			driver.close
 		end
 
@@ -114,55 +113,69 @@ feature {NONE} -- Implementation
 	run_game
 		local
 			l_timestamp:NATURAL_32
+			l_emulate_action:PROCEDURE[TUPLE]
+			l_fps:REAL_64
 		do
+			number_frame := 0
 			from
 				must_quit := False
 				next_frame := game_library.time_since_create
 			until
 				must_quit
 			loop
-
-
-				print("Next Frame: " + next_frame.out + "%N")
-				print("FPS: " + (1000 / (l_timestamp - fps_counter)).out + "%N")
-				fps_counter := l_timestamp
-				game_library.update_events
-				if attached emulator.input_buffer as la_buffer then
-					input_manager.update(la_buffer)
-				end
 				if game_library.time_since_create > (next_frame + (desired_fps_delta * 2)) then
-					emulator.emulate_skip_audio_video
+					l_emulate_action := agent emulator.emulate_skip_audio_video
 					print("Skipping audio and video frame%N")
 				elseif game_library.time_since_create > (next_frame + desired_fps_delta) then
-					emulator.emulate_skip_video
+					l_emulate_action := agent emulator.emulate_skip_video
 					print("Skipping video frame%N")
 				else
-					emulator.emulate
+					l_emulate_action := agent emulator.emulate
 				end
-				audio_manager.play_sound (emulator.sound_buffer, emulator.sound_buffer_size)
 				from
+					l_timestamp := game_library.time_since_create
 				until
-					game_library.time_since_create > (next_frame + desired_fps_delta)
+					l_timestamp > (next_frame + desired_fps_delta)
 				loop
+					l_timestamp := game_library.time_since_create
 				end
+--				print("Next Frame: " + next_frame.out + "%N")
+--				l_fps := (1000 / (l_timestamp - fps_counter))
+--				print("FPS: " + l_fps.out + "%N")
+--				fps_counter := l_timestamp
 				next_frame := next_frame + desired_fps_delta
-				if not emulator.pixel_buffer.is_default_pointer then
-					video_manager.draw_next_frame (emulator.pixel_buffer)
-				end
+				emulate_next_frame(l_emulate_action)
 				l_timestamp := game_library.time_since_create
-				if l_timestamp < (next_frame + (desired_fps_delta // 2)) then
-					game_library.delay ((next_frame + (desired_fps_delta // 2)) - l_timestamp)
+				if l_timestamp < (next_frame + (desired_fps_delta / 2)).floor.to_natural_32 then
+					game_library.delay (((next_frame + (desired_fps_delta / 2)).floor.to_natural_32) - l_timestamp)
 				end
 			end
 		end
 
+	emulate_next_frame(a_emulate_action:PROCEDURE[TUPLE])
+		do
+			game_library.update_events
+			if attached emulator.input_buffer as la_buffer then
+				input_manager.update(la_buffer)
+			end
+			a_emulate_action.call
+			audio_manager.play_samples (emulator.sound_buffer, emulator.sound_buffer_size)
+			if not emulator.pixel_buffer.is_default_pointer then
+				video_manager.draw_next_frame (emulator.pixel_buffer)
+			end
+			number_frame := number_frame + 1
+--			print("Frame #" + number_frame.out + "%N")
+		end
+
+	number_frame:INTEGER
+
 	fps_counter:NATURAL_32
 
 
-	next_frame:NATURAL_32
+	next_frame:REAL_64
 			-- The Timestamp to play the next frame
 
-	desired_fps_delta:NATURAL_32
+	desired_fps_delta:REAL_64
 			-- The number of milliseconds between two frames
 
 	old_timestamp:NATURAL_32

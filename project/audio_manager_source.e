@@ -5,7 +5,7 @@ note
 	revision: "0.1"
 
 class
-	AUDIO_MANAGER_OLD
+	AUDIO_MANAGER_SOURCE
 
 inherit
 	AUDIO_LIBRARY_SHARED
@@ -22,14 +22,18 @@ feature {NONE} -- Initialization
 			configuration := a_configuration
 			emulator := a_emulator
 			audio_library.sources_add
-			source := audio_library.last_source_added
+			create source.make (1500)
 			create sound.make(configuration.sound_rate)
 		end
 
 feature -- Access
 
-	prepare
+	is_prepared:BOOLEAN
+
+	prepare(a_fps_delta:REAL_64)
 			-- Set the `emulator' sound properties
+		require
+			Not_Prepared: not is_prepared
 		do
 			emulator.set_sound_volume (configuration.sound_volume)
 			emulator.set_sound_quality (configuration.sound_quality)
@@ -39,27 +43,38 @@ feature -- Access
 			emulator.set_square2_volume (configuration.sound_square2_volume)
 			emulator.set_noise_volume (configuration.sound_noise_volume)
 			emulator.set_pcm_volume (configuration.sound_pcm_volume)
+			blank_buffer_count := ((configuration.sound_rate / 1000) * a_fps_delta).ceiling
+			blank_buffer := blank_buffer.memory_calloc (blank_buffer_count, 4)
+			source.queue_sound_infinite_loop (sound)
+			is_prepared := True
+		ensure
+			Prepared: is_prepared
 		end
 
-	play_sound(a_buffer:POINTER; a_count: INTEGER_32)
+
+	play_samples(a_buffer:POINTER; a_count: INTEGER_32)
 			-- Play the sont pointed by `a_buffer' of len `a_count'
+		require
+			Prepared: is_prepared
 		do
-			sound.set_sample (a_buffer, a_count)
-			if source.sound_queued.count = 0 then
-				source.queue_sound_infinite_loop (sound)
+			if a_buffer.is_default_pointer then
+				sound.set_sample (blank_buffer, blank_buffer_count)
+			else
+				sound.set_sample (a_buffer, a_count)
 			end
 			if not source.is_playing then
 				source.play
 			end
-			audio_library.update
+			source.update_playing
 		end
 
 feature {NONE} -- Implementation
 
+
 	sound: STREAM_SOUND
 			-- The sound streamer
 
-	source:AUDIO_SOURCE
+	source:AUDIO_STREAMING_SOURCE
 			-- The source of the audio
 
 	emulator:FCEUX_EMULATOR
@@ -67,6 +82,10 @@ feature {NONE} -- Implementation
 
 	configuration:CONFIGURATION
 			-- The application coufiguration container
+
+	blank_buffer:POINTER
+
+	blank_buffer_count:INTEGER
 
 feature {NONE} -- C External
 

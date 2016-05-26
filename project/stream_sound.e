@@ -27,7 +27,7 @@ feature {AUDIO_SOURCE}
 	fill_buffer(a_buffer:POINTER;a_max_length:INTEGER)
 			-- <Precursor>
 		local
-			l_count:INTEGER
+			l_count, l_position:INTEGER
 			l_managed_source_buffer, l_managed_destination_buffer:MANAGED_POINTER
 			l_sample:INTEGER_16
 		do
@@ -38,12 +38,9 @@ feature {AUDIO_SOURCE}
 				across
 					0 |..| l_count as la_index
 				loop
-					l_sample := l_managed_source_buffer.read_integer_16 (
-															(la_index.item * byte_per_buffer_sample * 2))
-					l_managed_destination_buffer.put_integer_16 (
-													l_sample,
-													la_index.item * byte_per_buffer_sample
-												)
+					l_position := la_index.item * byte_per_buffer_sample
+					l_sample := l_managed_source_buffer.read_integer_16 (l_position * 2)
+					l_managed_destination_buffer.put_integer_16 (l_sample, l_position)
 				end
 				last_buffer_size := (l_count + 1) * byte_per_buffer_sample
 				is_buffer_managed := True
@@ -55,7 +52,7 @@ feature {AUDIO_SOURCE}
 	byte_per_buffer_sample:INTEGER
 			-- <Precursor>
 		once
-			Result := bits_per_sample // 8
+			Result := 2
 		end
 
 
@@ -80,7 +77,7 @@ feature --Access
 	bits_per_sample:INTEGER
 			-- <Precursor>
 		once
-			Result := 16
+			Result := byte_per_buffer_sample * 8
 		end
 
 	is_signed:BOOLEAN

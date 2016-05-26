@@ -6,7 +6,7 @@
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
-		<setting name="concurrency" value="scoop"/>
+		<setting name="concurrency" value="none"/>
 		<external_include location="${FCEUX_BP_SRC}/libfceux/include"/>
 		<external_include location="${FCEUX_BP_SRC}/Clib/include"/>
 		<external_cflag value="-DPSS_STYLE=1"/>
@@ -19,7 +19,7 @@
 		<external_linker_flag value="`pkg-config --libs zlib`"/>
 		<external_linker_flag value="-Wno-write-strings"/>
 		<external_linker_flag value="-fpermissive"/>
-		<precompile name="base_pre" location="$ISE_PRECOMP\base-mt-safe.ecf"/>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base-safe.ecf"/>
 		<library name="audio" location="$ISE_LIBRARY\contrib\library\game2\audio\audio-safe.ecf" readonly="false"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="game_core" location="$ISE_LIBRARY\contrib\library\game2\game_core\game_core-safe.ecf"/>
