@@ -16,16 +16,19 @@ feature {NONE} -- Initialization
 	make(a_configuration:CONFIGURATION; a_emulator:FCEUX_EMULATOR)
 			-- Initialization of `Current' using `a_emulator' as `emulator'
 			-- and `a_configuration' as `configuration'
+		local
+			l_buffer_size:INTEGER
 		do
 			configuration := a_configuration
 			emulator := a_emulator
-			create source.make (1500)
-			create managed_buffer.make (1500)
+			create source.make (0)
+			create managed_buffer.make (1)
 		end
 
 feature -- Access
 
 	is_prepared:BOOLEAN
+			-- Has `prepare' been sucessully called
 
 	prepare(a_fps_delta:REAL_64)
 			-- Set the `emulator' sound properties
@@ -40,6 +43,9 @@ feature -- Access
 			emulator.set_square2_volume (configuration.sound_square2_volume)
 			emulator.set_noise_volume (configuration.sound_noise_volume)
 			emulator.set_pcm_volume (configuration.sound_pcm_volume)
+			create managed_buffer.make (
+							(((configuration.sound_rate / 1000) * a_fps_delta) * 1.2).ceiling
+						)
 			is_prepared := True
 		ensure
 			Prepared: is_prepared

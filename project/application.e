@@ -26,7 +26,9 @@ feature {NONE} -- Initialization
 			audio_library.enable_sound
 			create l_engine
 			if not l_engine.has_error then
-				l_engine.run
+				l_engine.run_game("/home/louis/Documents/Super Mario Bros 3 (U) (PRG 0).nes", False, False)
+				--l_engine.run_game("/home/louis/Documents/Super Mario Bros (E).nes", False, False)
+				l_engine.close
 			end
 			l_engine := Void
 			game_library.clear_all_events

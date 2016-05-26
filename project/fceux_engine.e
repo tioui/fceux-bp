@@ -67,15 +67,19 @@ feature -- Access
 	audio_manager:AUDIO_MANAGER
 			-- Manage audio frame and audio system of `Current'
 
-	run
-			-- Execute the emulator
+	run_game(a_game_file:READABLE_STRING_GENERAL; a_ntsc, a_pal:BOOLEAN)
+			-- Execute the emulator on the game from the file `a_game_file'
+			-- Using `a_ntsc' or `a_pal' video mode. If `a_ntsc' and
+			-- `a_pal' are not set, the emulator will try to autodetect the
+			-- video mode
 		require
-			not has_error
+			No_Error: not has_error
+			NTSC_or_PAL: not (a_ntsc and a_pal)
 		local
 			l_index:INTEGER
 		do
-			emulator.load_game ("/home/louis/Documents/Super Mario Bros 3 (U) (PRG 0).nes")
---			emulator.load_game ("/home/louis/Documents/Super Mario Bros (E).nes")
+			emulator.load_game (a_game_file, not a_ntsc and not a_pal)
+--			emulator.load_game ()
 			l_index := 1
 			across configuration.buttons as la_buttons loop
 				emulator.set_input_gamepad (l_index)
@@ -85,38 +89,23 @@ feature -- Access
 			game_library.quit_signal_actions.extend (agent on_quit)
 			video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
 			video_manager.window.key_released_actions.extend (agent on_key_released)
-			old_timestamp := game_library.time_since_create
 			desired_fps_delta :=  1000 / emulator.desired_fps
 			audio_manager.prepare(desired_fps_delta)
-			run_game
+			resume
+		end
+
+	close
+		do
 			driver.close
 		end
 
-feature {NONE} -- Implementation
-
-	on_key_pressed(a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
-			-- When a keyboard key has been pressed
-		do
-			if not a_key_state.is_repeat then
-				input_manager.on_key_pressed(a_key_state)
-			end
-		end
-
-	on_key_released(a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
-			-- When a keyboard key has been released
-		do
-			if not a_key_state.is_repeat then
-				input_manager.on_key_released(a_key_state)
-			end
-		end
-
-	run_game
+	resume
 		local
 			l_timestamp:NATURAL_32
 			l_emulate_action:PROCEDURE[TUPLE]
 			l_fps:REAL_64
 		do
-			number_frame := 0
+--			number_frame := 0
 			from
 				must_quit := False
 				next_frame := game_library.time_since_create
@@ -152,7 +141,28 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	on_key_pressed(a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
+			-- When a keyboard key has been pressed
+		do
+			if not a_key_state.is_repeat then
+				input_manager.on_key_pressed(a_key_state)
+			end
+		end
+
+	on_key_released(a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
+			-- When a keyboard key has been released
+		do
+			if not a_key_state.is_repeat then
+				input_manager.on_key_released(a_key_state)
+			end
+		end
+
+
+
 	emulate_next_frame(a_emulate_action:PROCEDURE[TUPLE])
+			-- Use the `a_emulator_action' to emulate the next audio and video frame.
 		do
 			game_library.update_events
 			if attached emulator.input_buffer as la_buffer then
@@ -163,13 +173,17 @@ feature {NONE} -- Implementation
 			if not emulator.pixel_buffer.is_default_pointer then
 				video_manager.draw_next_frame (emulator.pixel_buffer)
 			end
-			number_frame := number_frame + 1
+--			number_frame := number_frame + 1
 --			print("Frame #" + number_frame.out + "%N")
 		end
 
-	number_frame:INTEGER
+--	number_frame:INTEGER
+			-- The number of total frame used since the creation of `Current'
+			-- To debug only.
 
-	fps_counter:NATURAL_32
+--	fps_counter:NATURAL_32
+			-- Used to show FPS
+			-- To debug only
 
 
 	next_frame:REAL_64
@@ -177,9 +191,6 @@ feature {NONE} -- Implementation
 
 	desired_fps_delta:REAL_64
 			-- The number of milliseconds between two frames
-
-	old_timestamp:NATURAL_32
-			-- Temporary: Used to show FPS
 
 	must_quit:BOOLEAN
 			-- The game must stop

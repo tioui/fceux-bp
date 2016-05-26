@@ -66,7 +66,7 @@ feature -- Access
 	game_cartrige:detachable GAME_CARTRIGE
 			-- The loaded game
 
-	load_game(a_path:READABLE_STRING_GENERAL)
+	load_game(a_path:READABLE_STRING_GENERAL; a_autodetect_video_mode:BOOLEAN)
 			-- Load the game in `a_path' to the `game_cartrige'
 		require
 			is_prepared
@@ -77,7 +77,7 @@ feature -- Access
 		do
 			create l_path.make_from_string (a_path)
 			create l_c_path.make (l_path.utf_8_name)
-			l_cartrige_item := fceui_LoadGame(l_c_path.item, configuration.autodetect_video_mode, not configuration.show_console_message)
+			l_cartrige_item := fceui_LoadGame(l_c_path.item, a_autodetect_video_mode, not configuration.show_console_message)
 			if not l_cartrige_item.is_default_pointer then
 				create game_cartrige.make (l_cartrige_item)
 			end
