@@ -44,7 +44,7 @@ feature -- Access
 			emulator.set_noise_volume (configuration.sound_noise_volume)
 			emulator.set_pcm_volume (configuration.sound_pcm_volume)
 			create managed_buffer.make (
-							(((configuration.sound_rate / 1000) * a_fps_delta) * 1.2).ceiling
+							(((configuration.sound_rate / 1000) * a_fps_delta) * 2.2).ceiling
 						)
 			is_prepared := True
 		ensure

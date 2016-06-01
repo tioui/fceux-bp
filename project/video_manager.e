@@ -20,22 +20,27 @@ feature {NONE} -- Initialization
 			-- Initialization of `Current' using `a_configuration' as `configuration'
 			-- and `a_emulator' as `emulator'
 		local
-			l_window_builder:GAME_WINDOW_SURFACED_BUILDER
+			l_window_builder:GAME_WINDOW_RENDERED_BUILDER
 			l_pixel_format:GAME_PIXEL_FORMAT
 		do
+			create {ARRAYED_LIST[GAME_COLOR]}color_palette.make (256)
+			across 1 |..| 256 as la_index loop
+				color_palette.extend(create {GAME_COLOR}.make_rgb (0, 0, 0))
+			end
 			emulator := a_emulator
 			configuration := a_configuration
-			l_window_builder.set_dimension (256, 240)
+			l_window_builder.set_dimension (configuration.window_width.to_integer_32, configuration.window_height.to_integer_32)
 			l_window_builder.enable_resizable
 			window := l_window_builder.generate_window
 			create l_pixel_format.default_create
-			l_pixel_format.set_index8
-			l_pixel_format.set_color_palette (create {GAME_COLOR_PALETTE}.make (256))
-			create surface.make_for_pixel_format (l_pixel_format, 256, 240)
+			l_pixel_format.set_rgb888
+			create texture.make (window.renderer, l_pixel_format, 256, 240)
 			create on_video_change
 			first_scan_line := configuration.first_scan_line
 			last_scan_line := configuration.last_scan_line
-			create optimied_surface.make_for_window (window, surface.width, surface.height)
+			if not configuration.must_stretch then
+				window.renderer.set_logical_size (256, 240)
+			end
 		end
 
 
@@ -46,72 +51,53 @@ feature -- Access
 
 	set_palette(a_index, a_red, a_green, a_blue:NATURAL_8)
 			-- <Precursor>
+		local
+			l_color:GAME_COLOR
+			l_index:INTEGER
 		do
-			if attached surface.pixel_format.color_palette as la_palette then
-				la_palette.at (a_index) := create {GAME_COLOR}.make_rgb (a_red, a_green, a_blue)
-			end
+			l_index := a_index.to_integer_32 + 1
+			check color_palette.valid_index (l_index) end
+			create l_color.make_rgb (a_red, a_green, a_blue)
+			color_palette.put_i_th (l_color, l_index)
 		end
 
 	get_palette(a_index:NATURAL_8):TUPLE[red, green, blue:NATURAL_8]
 			-- <Precursor>
 		local
-			l_color:GAME_COLOR_READABLE
+			l_color:GAME_COLOR
+			l_index:INTEGER
 		do
-			if attached surface.pixel_format.color_palette as la_palette then
-				l_color := la_palette.at (a_index)
+			l_index := a_index.to_integer_32 + 1
+			if color_palette.valid_index (l_index) then
+				l_color := color_palette.at (l_index)
 			else
 				create l_color.make_rgb (0, 0, 0)
 			end
+
 			Result := [l_color.red, l_color.green, l_color.blue]
 		end
 
 	draw_next_frame(a_buffer:POINTER)
 			-- <Precursor>
+		local
+			l_managed_buffer:MANAGED_POINTER
 		do
-			surface.lock
-			across first_scan_line |..| last_scan_line as la_index loop
-				(surface.pixels.item + (la_index.item * surface.pixels.pitch)).memory_copy (a_buffer + (la_index.item * 256), 254)
-			end
-			surface.unlock
-			if window.surface.width = surface.width and window.surface.height = surface.height then
-				window.surface.draw_surface (surface, 0, 0)
-			else
-				optimied_surface.draw_surface (surface, 0, 0)
-				if configuration.must_stretch then
-					window.surface.draw_sub_surface_with_scale (
-								optimied_surface, 0, 0, optimied_surface.width,
-								optimied_surface.height, 0, 0, window.surface.width,
-								window.surface.height
-							)
-				else
-					if ratio_old_window_width /= window.surface.width or ratio_old_window_height /= window.surface.height then
-						update_ratio
-					end
-					window.surface.draw_sub_surface_with_scale (
-								optimied_surface,
-								0, 0, optimied_surface.width, optimied_surface.height,
-								ratio_destination_x, ratio_destination_y, ratio_destination_width, ratio_destination_height
-							)
+			window.renderer.clear
+			create l_managed_buffer.share_from_pointer (a_buffer, 256*240)
+			texture.lock
+			across first_scan_line |..| last_scan_line as la_line loop
+				across 0 |..| 255 as la_column loop
+					texture.pixels.set_pixel (color_palette.at (l_managed_buffer.read_natural_8 (la_column.item + (la_line.item * 256)).to_integer_32 + 1), la_line.item + 1, la_column.item + 1)
 				end
 			end
-			window.update
-		end
+			texture.unlock
+			if configuration.must_stretch then
+				window.renderer.draw_sub_texture_with_scale (texture, 0, 0, 256, 240, 0, 0, window.renderer.output_size.width, window.renderer.output_size.height)
+			else
+				window.renderer.draw_texture (texture, 0, 0)
+			end
 
-	update_ratio
-			-- Update the `ratio_destination_x', `ratio_destination_y', `ratio_old_window_width' and
-			-- `ratio_old_window_height' values.
-		local
-			l_width_ratio, l_height_ratio, l_ratio:REAL_64
-		do
-			ratio_old_window_width := window.surface.width
-			ratio_old_window_height := window.surface.height
-			l_width_ratio := ratio_old_window_width / optimied_surface.width
-			l_height_ratio := ratio_old_window_height / optimied_surface.height
-			l_ratio := l_width_ratio.min (l_height_ratio)
-			ratio_destination_width := (optimied_surface.width * l_ratio).rounded
-			ratio_destination_height := (optimied_surface.height * l_ratio).rounded
-			ratio_destination_x := ratio_old_window_width // 2 - ratio_destination_width // 2
-			ratio_destination_y := ratio_old_window_height // 2 - ratio_destination_height // 2
+			window.update
 		end
 
 	video_has_changed
@@ -126,11 +112,14 @@ feature -- Access
 			on_video_change.call (l_video_informations)
 		end
 
-	window:GAME_WINDOW_SURFACED
+	window:GAME_WINDOW_RENDERED
 			-- The {GAME_WINDOW} to draw the scene
 
-	surface:GAME_SURFACE
-			-- An palleted surface
+	texture:GAME_TEXTURE_STREAMING
+			-- The source texture
+
+	color_palette:LIST[GAME_COLOR]
+			-- The palette used to draw video frames
 
 feature {NONE} -- Implementation
 
@@ -145,18 +134,6 @@ feature {NONE} -- Implementation
 
 	is_pal:BOOLEAN
 			-- Is `Current' in the PAL (`True') format or NTSC (`False')
-
-	optimied_surface:GAME_SURFACE
-			-- A `window' optimised surface
-
-	ratio_destination_x, ratio_destination_y:INTEGER
-			-- The start of the drawing destination when the ratio has to be keeped
-
-	ratio_destination_width, ratio_destination_height:INTEGER
-			-- The dimension of the drawing destination when the ratio has to be keeped
-
-	ratio_old_window_width, ratio_old_window_height:INTEGER
-			-- The dimension of the `window' when drawing the preeceding video frame
 
 invariant
 

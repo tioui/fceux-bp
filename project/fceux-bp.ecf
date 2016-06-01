@@ -19,11 +19,26 @@
 		<external_linker_flag value="-Wno-write-strings"/>
 		<external_linker_flag value="-fpermissive"/>
 		<precompile name="base_pre" location="$ISE_PRECOMP\base-safe.ecf"/>
-		<library name="audio" location="$ISE_LIBRARY\contrib\library\game2\audio\audio-safe.ecf" readonly="false"/>
-		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="game_core" location="$ISE_LIBRARY\contrib\library\game2\game_core\game_core-safe.ecf"/>
+		<library name="audio" location="$ISE_LIBRARY\contrib\library\game2\audio\audio-safe.ecf" readonly="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</option>
+		</library>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf">
+			<option>
+				<assertions/>
+			</option>
+		</library>
+		<library name="game_core" location="$ISE_LIBRARY\contrib\library\game2\game_core\game_core-safe.ecf">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</option>
+		</library>
 		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf"/>
 		<cluster name="fceux-bp" location=".\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			</option>
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 			</file_rule>

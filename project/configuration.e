@@ -19,6 +19,8 @@ feature {NONE} -- Initialization
 			-- Initialization of `Current'
 		do
 			create button_factory
+			window_width := 256
+			window_height := 240
 			first_scan_line := 0
 			last_scan_line := 239
 			show_console_message := True
@@ -71,6 +73,9 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
+
+	window_width, window_height:NATURAL
+			-- The dimension of the {GAME_WINDOW}
 
 	show_console_message:BOOLEAN
 			-- Debug message is print to the console
