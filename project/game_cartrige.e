@@ -26,10 +26,46 @@ feature -- Access
 			Result := not item.is_default_pointer
 		end
 
+	name:READABLE_STRING_GENERAL
+		require
+			Exists: exists
+		local
+			l_converter:UTF_CONVERTER
+			l_c_string:C_STRING
+		do
+			create l_converter
+			create l_c_string.make_shared_from_pointer (fceugi_name (item))
+			Result := l_converter.utf_8_string_8_to_escaped_string_32(l_c_string.string)
+		end
+
+	mapper_number:INTEGER
+		require
+			Exists: exists
+		do
+			Result := fceugi_mapper_number(item)
+		end
+
+
 feature {FCEUX_EMULATOR} -- Implementation
 
 	item:POINTER
-	
+
+feature {NONE} -- Externals
+
+	fceugi_name(a_item:POINTER):POINTER
+		external
+			"C++ inline use <driver.h>"
+		alias
+			"((FCEUGI *)$a_item)->name"
+		end
+
+	fceugi_mapper_number(a_item:POINTER):INTEGER
+		external
+			"C++ inline use <driver.h>"
+		alias
+			"((FCEUGI *)$a_item)->mappernum"
+		end
+
 invariant
 
 note
