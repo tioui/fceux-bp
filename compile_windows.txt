@@ -1,0 +1,21 @@
+Cross compile from Ubuntu (Win32):
+	- Install MinGW32 C++ cross compiler:
+		# sudo apt-get install g++-mingw-w64-i686
+	- Compile Zlib:
+		- Download the zlib source code
+		- In the zlib directory:
+			- Change the variable PREFIX in win32/Makefile.gcc file to:
+				PREFIX = i686-w64-mingw32-
+			- Compile zlib:
+				# BINARY_PATH=/usr/i686-w64-mingw32/bin INCLUDE_PATH=/usr/i686-w64-mingw32/include LIBRARY_PATH=/usr/i686-w64-mingw32/lib make -f win32/Makefile.gcc
+				# sudo BINARY_PATH=/usr/i686-w64-mingw32/bin INCLUDE_PATH=/usr/i686-w64-mingw32/include LIBRARY_PATH=/usr/i686-w64-mingw32/lib make -f win32/Makefile.gcc install
+	- Installing Lua library
+		- Download Lua binary from there:
+			https://sourceforge.net/projects/luabinaries/files/5.1.5/Windows%20Libraries/Static/
+		- Put every .h of the include directory in /usr/i686-w64-mingw32/include
+		- Put the .a or .so in /usr/i686-w64-mingw32/lib
+	- Compile Fceux library
+		- Untar the fceux source tarball
+		- Copy the "compile_win.sh" file into the fceux untared directory
+		- Execute the compile_win.sh
+		- Copy the "libfceux.a" file in "/libfceux/lib"
