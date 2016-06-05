@@ -19,7 +19,7 @@ libfceux/lib/libfceux.a: libfceux-*_src.tar.bz2
 
 Clib/lib/bpdriver.o: libfceux/include/types.h Clib/src/bpdriver.cpp Clib/include/bpdriver.h
 	mkdir -p Clib/lib
-	c++ -oClib/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c Clib/src/bpdriver.cpp
+	${TOOLCHAIN_PREFIX}c++ -oClib/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c Clib/src/bpdriver.cpp
 
 clean:
 	rm -rf libfceux.src
