@@ -20,3 +20,7 @@ Clib/lib/bpdriver.o: libfceux/include/types.h Clib/src/bpdriver.cpp Clib/include
 	mkdir -p Clib/lib
 	c++ -oClib/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c Clib/src/bpdriver.cpp
 
+clean:
+	rm -rf libfceux.src
+	rm -rf libfceux
+	rm Clib/lib/bpdriver.o
