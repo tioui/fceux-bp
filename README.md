@@ -14,8 +14,7 @@ Note: The program is only compatible with Linux at this time.
 
 	- Clone the projet
 	- Set an environment variable named FCEUX_BP_SRC that point to the clone directory
-	- Download Fceux source and put the .tar.gz file in $FCEUX_BP_SRC (the version 2.2.2 has been tested)
-	- Use the Makefile:
+	- Use the Makefile (may be important to adapt):
 		# cd $FCEUX_BP_SRC
 		# make
 	- If a compilation error occured, it is probably a missing C library. Install the missing library and re-execute 'make'.
