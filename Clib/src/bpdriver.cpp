@@ -129,36 +129,6 @@ void FCEUD_Message(const char *s)
     return;
 }
 
-int FCEUD_NetworkConnect(void)
-{
-    printf("Not done: FCEUD_NetworkConnect\n");
-    return 0;
-}
-
-int FCEUD_GetDataFromClients(uint8 *data)
-{
-    printf("Not done: FCEUD_GetDataFromClients\n");
-    return 0;
-}
-
-int FCEUD_SendDataToClients(uint8 *data)
-{
-    printf("Not done: FCEUD_SendDataToClients\n");
-    return 0;
-}
-
-int FCEUD_SendDataToServer(uint8 v, uint8 cmd)
-{
-    printf("Not done: FCEUD_SendDataToServer\n");
-    return 0;
-}
-
-int FCEUD_GetDataFromServer(uint8 *data)
-{
-    printf("Not done: FCEUD_GetDataFromServer\n");
-    return 0;
-}
-
 void FCEUD_NetworkClose(void)
 {
     printf("Not done: FCEUD_NetworkClose\n");
@@ -197,7 +167,6 @@ void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC
     printf("Not done: FCEUD_SetInput\n");
     return;
 }
-
 
 FILE *FCEUD_UTF8fopen(const char *fn, const char *mode)
 {

@@ -1,14 +1,14 @@
 TOOLCHAIN_PREFIX=
-INCLUDE_DIR=/usr/include/lua5.1
+INCLUDE_DIR="-I/usr/include/lua5.1"
 
 all: libfceux/lib/libfceux.a Clib/lib/bpdriver.o
 
 libfceux/include/types.h: libfceux/lib/libfceux.a
 
-libfceux/lib/libfceux.a: libfceux-*.src.tar.gz
-	tar xvfj fceux-*.src.tar.bz2
-	if [ ! -d libfceux.src ]; then mv libfceux-?.?.? fceux.src; fi
-	cd fceux.src;PREFIX=${TOOLCHAIN_PREFIX} INCLUDE=${INCLUDE_DIR} ./compile_lib.sh
+libfceux/lib/libfceux.a: libfceux-*_src.tar.bz2
+	tar xvfj libfceux-*_src.tar.bz2
+	if [ ! -d libfceux.src ]; then mv libfceux-?.?.? libfceux.src; fi
+	cd libfceux.src;PREFIX=${TOOLCHAIN_PREFIX} INCLUDE=${INCLUDE_DIR} ./compile_lib.sh
 	mkdir -p libfceux/include
 	mkdir -p libfceux/lib
 	cp -p libfceux.src/src/*.h ./libfceux/include
