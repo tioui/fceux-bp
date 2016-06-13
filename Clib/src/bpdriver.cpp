@@ -202,7 +202,6 @@ void FCEUD_VideoChanged()
 
 bool FCEUI_AviIsRecording(void)
 {
-    printf("Not done: FCEUI_AviIsRecording\n");
     return false;
 }
 
