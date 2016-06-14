@@ -3,3 +3,5 @@ libfceux
 EIFGENs
 Clib/lib
 *.swp
+*.dll
+*.rc

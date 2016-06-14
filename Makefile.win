@@ -1,5 +1,6 @@
-TOOLCHAIN_PREFIX=i686-w64-mingw32-
-INCLUDE_DIR=
+TOOLCHAIN_PREFIX=
+INCLUDE_DIR="-I../../liblua-5.1/include -I../../zlib128-dll/include"
+ISE_EIFFEL=C:/Program Files (x86)/Eiffel Software/EiffelStudio 16.05 GPL
 
 all: libfceux/lib/libfceux.a Clib/lib/bpdriver.o
 
@@ -8,7 +9,7 @@ libfceux/include/types.h: libfceux/lib/libfceux.a
 libfceux/lib/libfceux.a: libfceux-*_src.tar.bz2
 	if [ ! -d libfceux.src ]; then tar xvfj libfceux-*_src.tar.bz2; fi
 	if [ ! -d libfceux.src ]; then mv libfceux-?.?.? libfceux.src; fi
-	cd libfceux.src;PREFIX=${TOOLCHAIN_PREFIX} INCLUDE=${INCLUDE_DIR} ./compile_lib.sh
+	cd libfceux.src;PREFIX=${TOOLCHAIN_PREFIX} INCLUDE=${INCLUDE_DIR} ./compile_lib_win.sh
 	mkdir -p libfceux/include
 	mkdir -p libfceux/lib
 	cp -p libfceux.src/src/*.h ./libfceux/include
@@ -17,9 +18,9 @@ libfceux/lib/libfceux.a: libfceux-*_src.tar.bz2
 	mv libfceux.src/libfceux.a ./libfceux/lib
 	rm -rf libfceux.src
 
-Clib/lib/bpdriver.o: libfceux/include/types.h Clib/src/bpdriver.cpp Clib/include/bpdriver.h
+Clib/lib/bpdriver.o: Clib/src/bpdriver.cpp Clib/include/bpdriver.h libfceux/include/types.h 
 	mkdir -p Clib/lib
-	${TOOLCHAIN_PREFIX}c++ -oClib/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I${ISE_EIFFEL}/studio/spec/linux-x86-64/include -c Clib/src/bpdriver.cpp
+	${TOOLCHAIN_PREFIX}c++ -oClib/lib/bpdriver.o -Wno-write-strings -DPSS_STYLE=1 -I"${ISE_EIFFEL}/studio/spec/${ISE_PLATFORM}/include" -c Clib/src/bpdriver.cpp
 
 clean:
 	rm -rf libfceux.src
