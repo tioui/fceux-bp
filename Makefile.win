@@ -1,6 +1,6 @@
 TOOLCHAIN_PREFIX=
 INCLUDE_DIR="-I../../liblua/include -I../../zlib/include"
-ISE_EIFFEL=C:/Program Files (x86)/Eiffel Software/EiffelStudio 16.05 GPL
+ISE_EIFFEL=C:/Program Files/Eiffel Software/EiffelStudio 16.05 GPL
 
 all: libfceux/lib/libfceux.a Clib/lib/bpdriver.o
 
