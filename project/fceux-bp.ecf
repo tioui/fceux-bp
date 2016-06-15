@@ -13,16 +13,6 @@
 		<external_cflag value="-Wno-write-strings"/>
 		<external_object location="${FCEUX_BP_SRC}/libfceux/lib/libfceux.a"/>
 		<external_object location="${FCEUX_BP_SRC}/Clib/lib/bpdriver.o"/>
-		<external_linker_flag value="`pkg-config --libs lua5.1`">
-			<condition>
-				<platform excluded_value="windows"/>
-			</condition>
-		</external_linker_flag>
-		<external_linker_flag value="`pkg-config --libs zlib`">
-			<condition>
-				<platform excluded_value="windows"/>
-			</condition>
-		</external_linker_flag>
 		<external_object location="${FCEUX_BP_SRC}/libfceux/lib/libz.a">
 			<condition>
 				<platform value="windows"/>
@@ -33,12 +23,22 @@
 				<platform value="windows"/>
 			</condition>
 		</external_object>
+		<external_linker_flag value="`pkg-config --libs lua5.1`">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_linker_flag>
+		<external_linker_flag value="`pkg-config --libs zlib`">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_linker_flag>
 		<external_linker_flag value="-Wno-write-strings"/>
 		<external_linker_flag value="-fpermissive"/>
 		<precompile name="base_pre" location="$ISE_PRECOMP\base-safe.ecf"/>
 		<library name="audio" location="$ISE_LIBRARY\contrib\library\game2\audio\audio-safe.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="game_core" location="$ISE_LIBRARY\contrib\library\game2\game_core\game_core-safe.ecf"/>
+		<library name="game_core" location="$ISE_LIBRARY\contrib\library\game2\game_core\game_core-safe.ecf" readonly="false"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf"/>
 		<cluster name="fceux-bp" location=".\" recursive="true">
 			<file_rule>

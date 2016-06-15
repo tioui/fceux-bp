@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make(a_configuration:CONFIGURATION; a_emulator:FCEUX_EMULATOR; a_video_manager:FCEUX_VIDEO_MANAGER)
+	make(a_configuration:CONFIGURATION; a_emulator:FCEUX_EMULATOR; a_video_manager:VIDEO_MANAGER)
 			-- Initialization of `Current' using `a_video_manager' as `video_manager', `a_configuration' as `configuration'
 			-- and `a_emulator' as `emulator'
 		do

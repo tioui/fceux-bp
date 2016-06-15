@@ -80,6 +80,8 @@ feature -- Access
 			l_cartrige_item := fceui_LoadGame(l_c_path.item, a_autodetect_video_mode, not configuration.show_console_message)
 			if not l_cartrige_item.is_default_pointer then
 				create game_cartrige.make (l_cartrige_item)
+			else
+				has_error := True
 			end
 
 		end

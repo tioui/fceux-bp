@@ -9,7 +9,7 @@ deferred class
 
 feature {NONE} -- Implementation
 
-	make(a_video_manager:FCEUX_VIDEO_MANAGER)
+	make(a_video_manager:VIDEO_MANAGER)
 			-- Initialization of `Current' using `a_video_manager' as `video_manager'
 		do
 			video_manager := a_video_manager
@@ -25,7 +25,7 @@ feature -- Acess
 
 feature {NONE} -- Implementation
 
-	video_manager:FCEUX_VIDEO_MANAGER
+	video_manager:VIDEO_MANAGER
 			-- Used to manage image frames
 
 	show_message(a_message:STRING_8)

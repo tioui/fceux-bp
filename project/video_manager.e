@@ -8,8 +8,8 @@ class
 	VIDEO_MANAGER
 
 inherit
-	FCEUX_VIDEO_MANAGER
 	GAME_LIBRARY_SHARED
+	ERROR_CONSTANTS
 
 create
 	make
@@ -22,7 +22,10 @@ feature {NONE} -- Initialization
 		local
 			l_window_builder:GAME_WINDOW_RENDERED_BUILDER
 			l_pixel_format:GAME_PIXEL_FORMAT
+			l_mode:GAME_DISPLAY_MODE
 		do
+			create l_window_builder
+			error_index := No_error
 			create {ARRAYED_LIST[GAME_COLOR]}color_palette.make (256)
 			across 1 |..| 256 as la_index loop
 				color_palette.extend(create {GAME_COLOR}.make_rgb (0, 0, 0))
@@ -32,6 +35,10 @@ feature {NONE} -- Initialization
 			l_window_builder.set_dimension (configuration.window_width.to_integer_32, configuration.window_height.to_integer_32)
 			l_window_builder.enable_resizable
 			window := l_window_builder.generate_window
+			if configuration.full_screen then
+				window.set_display_mode (fullscreen_display_mode)
+				window.set_fullscreen
+			end
 			create l_pixel_format.default_create
 			l_pixel_format.set_rgb888
 			create texture.make (window.renderer, l_pixel_format, 256, 240)
@@ -43,8 +50,38 @@ feature {NONE} -- Initialization
 			end
 		end
 
+	fullscreen_display_mode:GAME_DISPLAY_MODE
+		local
+			l_mode:GAME_DISPLAY_MODE
+			l_displays: LIST [GAME_DISPLAY]
+			l_display:GAME_DISPLAY
+		do
+			l_displays := game_library.displays
+			if l_displays.valid_index (1) then
+				if l_displays.valid_index (configuration.full_screen_display_index) then
+					l_display := l_displays.at (configuration.full_screen_display_index)
+				else
+					l_display := l_displays.at (1)
+				end
+				create l_mode.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
+				Result := l_display.closest_mode (l_mode)
+			else
+				create Result.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
+				error_index := Cannot_Found_Display
+			end
+		end
+
 
 feature -- Access
+
+	has_error:BOOLEAN
+			-- An error occured
+		do
+			Result := error_index /= No_error
+		end
+
+	error_index:INTEGER
+			-- A error index to indicate the error type (0 for No Error)
 
 	on_video_change:ACTION_SEQUENCE[TUPLE[is_pal:BOOLEAN; first_scan_line, last_scan_line:INTEGER]]
 			-- Actions to be launched when the internal video system has been modified

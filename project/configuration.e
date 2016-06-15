@@ -21,13 +21,17 @@ feature {NONE} -- Initialization
 			create button_factory
 			window_width := 256
 			window_height := 240
+			full_screen := True
+			full_screen_width := 1920
+			full_screen_height := 1200
+			full_screen_display_index := 0
 			first_scan_line := 0
 			last_scan_line := 239
-			show_console_message := True
+			show_console_message := true
 			autodetect_video_mode := True
 			video_skip := True
 			audio_skip := True
-			must_stretch := False
+			must_stretch := True
 			initialize_buttons
 			sound_rate := 44100
 			sound_volume := 150
@@ -76,6 +80,15 @@ feature -- Access
 
 	window_width, window_height:NATURAL
 			-- The dimension of the {GAME_WINDOW}
+
+	full_screen:BOOLEAN
+			-- The {GAME_WINDOW} will fill the screen
+
+	full_screen_width, full_screen_height:NATURAL
+			-- The dimension of the `full_screen' {GAME_WINDOW}
+
+	full_screen_display_index:INTEGER
+			-- The index of the display that must receive the `full_screen' {GAME_WINDOW}
 
 	show_console_message:BOOLEAN
 			-- Debug message is print to the console

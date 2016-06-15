@@ -5,7 +5,7 @@ note
 	revision: "0.1"
 
 class
-	FCEUX_ENGINE
+	EMULATION_ENGINE
 
 inherit
 	GAME_LIBRARY_SHARED
@@ -16,23 +16,27 @@ inherit
 		redefine
 			default_create
 		end
+	ERROR_CONSTANTS
+		redefine
+			default_create
+		end
 
 feature {NONE} -- Initialization
 
 	default_create
 			-- Initialization of `Current'
 		do
-			has_error := False
-			error_text := ""
+			error_index := No_error
 			initialize_base_directory
 			create configuration
 			create input_manager.make(configuration)
 			create emulator.make (configuration)
 			create video_manager.make (configuration, emulator)
+			error_index := video_manager.error_index
 			create driver.make(configuration, emulator, video_manager)
 			create audio_manager.make(configuration, emulator)
 			if emulator.has_error then
-				has_error := True
+				error_index := General_error
 			else
 				emulator.prepare
 			end
@@ -42,9 +46,12 @@ feature -- Access
 
 	has_error:BOOLEAN
 			-- An error occured
+		do
+			Result := error_index /= No_error
+		end
 
-	error_text:READABLE_STRING_GENERAL
-			-- A text error to show
+	error_index:INTEGER
+			-- A error index to indicate the error type (0 for No Error)
 
 	base_directory:READABLE_STRING_GENERAL
 			-- Th directory to used in `Current'
@@ -79,19 +86,22 @@ feature -- Access
 			l_index:INTEGER
 		do
 			emulator.load_game (a_game_file, not a_ntsc and not a_pal)
---			emulator.load_game ()
-			l_index := 1
-			across configuration.buttons as la_buttons loop
-				emulator.set_input_gamepad (l_index)
-				l_index := l_index + 1
+			if emulator.has_error then
+				error_index := game_file_not_valid
+			else
+				l_index := 1
+				across configuration.buttons as la_buttons loop
+					emulator.set_input_gamepad (l_index)
+					l_index := l_index + 1
+				end
+				emulator.set_input_gamepad (configuration.buttons.count)
+				game_library.quit_signal_actions.extend (agent on_quit)
+				video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
+				video_manager.window.key_released_actions.extend (agent on_key_released)
+				desired_fps_delta :=  1000 / emulator.desired_fps
+				audio_manager.prepare(desired_fps_delta)
+				resume
 			end
-			emulator.set_input_gamepad (configuration.buttons.count)
-			game_library.quit_signal_actions.extend (agent on_quit)
-			video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
-			video_manager.window.key_released_actions.extend (agent on_key_released)
-			desired_fps_delta :=  1000 / emulator.desired_fps
-			audio_manager.prepare(desired_fps_delta)
-			resume
 		end
 
 	close
@@ -103,7 +113,7 @@ feature -- Access
 		local
 			l_timestamp:NATURAL_32
 			l_emulate_action:PROCEDURE[TUPLE]
-			l_fps:REAL_64
+--			l_fps:REAL_64
 		do
 --			number_frame := 0
 			from
@@ -158,8 +168,6 @@ feature {NONE} -- Implementation
 				input_manager.on_key_released(a_key_state)
 			end
 		end
-
-
 
 	emulate_next_frame(a_emulate_action:PROCEDURE[TUPLE])
 			-- Use the `a_emulator_action' to emulate the next audio and video frame.
