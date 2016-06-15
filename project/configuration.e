@@ -8,7 +8,7 @@ class
 	CONFIGURATION
 
 inherit
-	ANY
+	GAME_LIBRARY_SHARED
 		redefine
 			default_create
 		end
@@ -21,9 +21,9 @@ feature {NONE} -- Initialization
 			create button_factory
 			window_width := 256
 			window_height := 240
-			full_screen := True
-			full_screen_width := 1920
-			full_screen_height := 1200
+			full_screen := False
+			full_screen_width := 0
+			full_screen_height := 0
 			full_screen_display_index := 0
 			first_scan_line := 0
 			last_scan_line := 239

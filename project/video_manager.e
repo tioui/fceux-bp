@@ -10,6 +10,19 @@ class
 inherit
 	GAME_LIBRARY_SHARED
 	ERROR_CONSTANTS
+		export
+			{NONE} all
+		end
+	PLATFORM
+		export
+			{NONE} all
+		end
+	GAME_SDL_ANY
+		rename
+			has_error as has_sdl_error
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -22,13 +35,12 @@ feature {NONE} -- Initialization
 		local
 			l_window_builder:GAME_WINDOW_RENDERED_BUILDER
 			l_pixel_format:GAME_PIXEL_FORMAT
-			l_mode:GAME_DISPLAY_MODE
 		do
 			create l_window_builder
 			error_index := No_error
-			create {ARRAYED_LIST[GAME_COLOR]}color_palette.make (256)
-			across 1 |..| 256 as la_index loop
-				color_palette.extend(create {GAME_COLOR}.make_rgb (0, 0, 0))
+			create color_palette.make (256 * 3)
+			across 0 |..| 255 as la_index loop
+				set_palette(la_index.item.to_natural_8, 0, 0, 0)
 			end
 			emulator := a_emulator
 			configuration := a_configuration
@@ -63,8 +75,12 @@ feature {NONE} -- Initialization
 				else
 					l_display := l_displays.at (1)
 				end
-				create l_mode.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
-				Result := l_display.closest_mode (l_mode)
+				if configuration.full_screen_width = 0 or configuration.full_screen_height = 0 then
+					Result := l_display.current_mode
+				else
+					create l_mode.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
+					Result := l_display.closest_mode (l_mode)
+				end
 			else
 				create Result.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
 				error_index := Cannot_Found_Display
@@ -88,45 +104,33 @@ feature -- Access
 
 	set_palette(a_index, a_red, a_green, a_blue:NATURAL_8)
 			-- <Precursor>
-		local
-			l_color:GAME_COLOR
-			l_index:INTEGER
 		do
-			l_index := a_index.to_integer_32 + 1
-			check color_palette.valid_index (l_index) end
-			create l_color.make_rgb (a_red, a_green, a_blue)
-			color_palette.put_i_th (l_color, l_index)
+			if a_index = 128 then
+				print("")
+			end
+			color_palette.put_natural_8 (a_red, a_index.to_integer_32 * 3)
+			color_palette.put_natural_8 (a_green, (a_index.to_integer_32 * 3) + 1)
+			color_palette.put_natural_8 (a_blue, (a_index.to_integer_32 * 3) + 2)
 		end
 
 	get_palette(a_index:NATURAL_8):TUPLE[red, green, blue:NATURAL_8]
 			-- <Precursor>
 		local
-			l_color:GAME_COLOR
-			l_index:INTEGER
+			l_red, l_green, l_blue:NATURAL_8
 		do
-			l_index := a_index.to_integer_32 + 1
-			if color_palette.valid_index (l_index) then
-				l_color := color_palette.at (l_index)
-			else
-				create l_color.make_rgb (0, 0, 0)
-			end
-
-			Result := [l_color.red, l_color.green, l_color.blue]
+			l_red := color_palette.read_natural_8 (a_index.to_integer_32 * 3)
+			l_green := color_palette.read_natural_8 ((a_index.to_integer_32 * 3) + 1)
+			l_blue := color_palette.read_natural_8 ((a_index.to_integer_32 * 3) + 2)
+			Result := [l_red, l_green, l_blue]
 		end
 
 	draw_next_frame(a_buffer:POINTER)
 			-- <Precursor>
 		local
-			l_managed_buffer:MANAGED_POINTER
 		do
 			window.renderer.clear
-			create l_managed_buffer.share_from_pointer (a_buffer, 256*240)
 			texture.lock
-			across first_scan_line |..| last_scan_line as la_line loop
-				across 0 |..| 255 as la_column loop
-					texture.pixels.set_pixel (color_palette.at (l_managed_buffer.read_natural_8 (la_column.item + (la_line.item * 256)).to_integer_32 + 1), la_line.item + 1, la_column.item + 1)
-				end
-			end
+			update_texture (first_scan_line, last_scan_line, color_palette.item, a_buffer, texture.pixels.item, texture.pixels.pitch, texture.pixels.pixel_format.item, is_little_endian)
 			texture.unlock
 			if configuration.must_stretch then
 				window.renderer.draw_sub_texture_with_scale (texture, 0, 0, 256, 240, 0, 0, window.renderer.output_size.width, window.renderer.output_size.height)
@@ -155,7 +159,7 @@ feature -- Access
 	texture:GAME_TEXTURE_STREAMING
 			-- The source texture
 
-	color_palette:LIST[GAME_COLOR]
+	color_palette:MANAGED_POINTER
 			-- The palette used to draw video frames
 
 feature {NONE} -- Implementation
@@ -171,6 +175,69 @@ feature {NONE} -- Implementation
 
 	is_pal:BOOLEAN
 			-- Is `Current' in the PAL (`True') format or NTSC (`False')
+
+feature {NONE} -- Externals
+
+	update_texture(a_first_line, a_last_line:INTEGER; a_color_palette, a_buffer, a_texture_buffer:POINTER
+					a_texture_buffer_pitch:INTEGER; a_pixel_format:POINTER; a_is_little_endian:BOOLEAN)
+			-- A C routine use to optimize the update of the `texture' when the `draw_next_frame' is used
+			-- Update only the line between `a_first_line' and `a_last_line'. Use the colors in `a_color_palette'.
+			-- Get the colors index from the `a_buffer' an draw them in the `a_texture_buffer'. The `texture' use
+			-- `a_texture_buffer_pitch' and `a_pixel_format' internally. If `a_is_little_endian' is set, the current
+			-- machine used Littel endian internal representation.
+		external
+			"C inline use <SDL.h>"
+		alias
+			"[
+				int l_line, l_column;
+				const SDL_PixelFormat* l_pixel_format = (const SDL_PixelFormat*)$a_pixel_format;
+				Uint8* l_color_palette = (Uint8*)$a_color_palette;
+				Uint8* l_buffer = (Uint8*)$a_buffer;
+				Uint8* l_texture_buffer = (Uint8*)$a_texture_buffer;
+				int l_bytes_per_pixel = l_pixel_format->BytesPerPixel;
+				Uint8* l_pixel;
+				for (l_line = $a_first_line; l_line <= $a_last_line; l_line = l_line + 1)
+				{
+					for (l_column = 0; l_column < 256; l_column = l_column + 1)
+					{
+						int l_color_index = l_buffer[(l_line * 256) + l_column];
+						Uint32 l_color = SDL_MapRGB(l_pixel_format, 
+								l_color_palette[l_color_index * 3],
+								l_color_palette[(l_color_index * 3) + 1],
+								l_color_palette[(l_color_index * 3) + 2]);
+						l_pixel = l_texture_buffer + (l_line * $a_texture_buffer_pitch) + (l_column * l_bytes_per_pixel);
+						switch(l_bytes_per_pixel)
+						{
+						case 1:
+							*l_pixel = l_color;
+							break;
+						case 2:
+							*(Uint16 *)l_pixel = l_color;
+							break;
+						case 3:
+							if ($a_is_little_endian)
+							{
+								l_pixel[0] = l_color & 0xff;
+								l_pixel[1] = (l_color >> 8) & 0xff;
+								l_pixel[2] = (l_color >> 16) & 0xff;
+							}
+							else
+							{
+								l_pixel[0] = (l_color >> 16) & 0xff;
+								l_pixel[1] = (l_color >> 8) & 0xff;
+								l_pixel[2] = l_color & 0xff;
+							}
+							break;
+						case 4:
+							*(Uint32 *)l_pixel = l_color;
+							break;
+						}
+					}
+				}
+
+		]"
+		end
+
 
 invariant
 
