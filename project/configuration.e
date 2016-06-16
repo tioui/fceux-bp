@@ -113,39 +113,149 @@ feature -- Access
 	base_directory:READABLE_STRING_GENERAL
 			-- Th directory to used in `Current'
 
-	window_width, window_height:NATURAL
-			-- The dimension of the {GAME_WINDOW}
+	window_width:NATURAL assign set_window_width
+			-- The horizontal dimension of the {GAME_WINDOW}
+			
+	set_window_width(a_window_width:NATURAL)
+			-- Assign `a_window_width' to `window_width'
+		do
+			window_width := a_window_width
+		ensure
+			Is_Assign: window_width ~ a_window_width
+		end
 
-	full_screen:BOOLEAN
+	window_height:NATURAL assign set_window_height
+			-- The vertical dimension of the {GAME_WINDOW}
+			
+	set_window_height(a_window_height:NATURAL)
+			-- Assign `a_window_height' to `window_height'
+		do
+			window_height := a_window_height
+		ensure
+			Is_Assign: window_height ~ a_window_height
+		end
+
+	full_screen:BOOLEAN assign set_full_screen
 			-- The {GAME_WINDOW} will fill the screen
+			
+	set_full_screen(a_full_screen:BOOLEAN)
+			-- Assign `a_full_screen' to `full_screen'
+		do
+			full_screen := a_full_screen
+		ensure
+			Is_Assign: full_screen ~ a_full_screen
+		end
 
-	full_screen_width, full_screen_height:NATURAL
-			-- The dimension of the `full_screen' {GAME_WINDOW}
+	full_screen_width:NATURAL assign set_full_screen_width
+			-- The horizontal dimension of the `full_screen' {GAME_WINDOW}
+			
+	set_full_screen_width(a_full_screen_width:NATURAL)
+			-- Assign `a_full_screen_width' to `full_screen_width'
+		do
+			full_screen_width := a_full_screen_width
+		ensure
+			Is_Assign: full_screen_width ~ a_full_screen_width
+		end
 
-	full_screen_display_index:INTEGER
+	full_screen_height:NATURAL assign set_full_screen_height
+			-- The vertical dimension of the `full_screen' {GAME_WINDOW}
+			
+	set_full_screen_height(a_full_screen_height:NATURAL)
+			-- Assign `a_full_screen_height' to `full_screen_height'
+		do
+			full_screen_height := a_full_screen_height
+		ensure
+			Is_Assign: full_screen_height ~ a_full_screen_height
+		end
+
+	full_screen_display_index:INTEGER assign set_full_screen_display_index
 			-- The index of the display that must receive the `full_screen' {GAME_WINDOW}
+			
+	set_full_screen_display_index(a_full_screen_display_index:INTEGER)
+			-- Assign `a_full_screen_display_index' to `full_screen_display_index'
+		do
+			full_screen_display_index := a_full_screen_display_index
+		ensure
+			Is_Assign: full_screen_display_index ~ a_full_screen_display_index
+		end
 
-	show_console_message:BOOLEAN
+	show_console_message:BOOLEAN assign set_show_console_message
 			-- Debug message is print to the console
+			
+	set_show_console_message(a_show_console_message:BOOLEAN)
+			-- Assign `a_show_console_message' to `show_console_message'
+		do
+			show_console_message := a_show_console_message
+		ensure
+			Is_Assign: show_console_message ~ a_show_console_message
+		end
 
-	autodetect_video_mode:BOOLEAN
+	autodetect_video_mode:BOOLEAN assign set_autodetect_video_mode
 			-- If a PAL game is load, change automaticaly the video mode
+			
+	set_autodetect_video_mode(a_autodetect_video_mode:BOOLEAN)
+			-- Assign `a_autodetect_video_mode' to `autodetect_video_mode'
+		do
+			autodetect_video_mode := a_autodetect_video_mode
+		ensure
+			Is_Assign: autodetect_video_mode ~ a_autodetect_video_mode
+		end
 
-	video_skip:BOOLEAN
+	video_skip:BOOLEAN assign set_video_skip
 			-- Skip video frame if it is necessary
+			
+	set_video_skip(a_video_skip:BOOLEAN)
+			-- Assign `a_video_skip' to `video_skip'
+		do
+			video_skip := a_video_skip
+		ensure
+			Is_Assign: video_skip ~ a_video_skip
+		end
 
-	audio_skip:BOOLEAN
+	audio_skip:BOOLEAN assign set_audio_skip
 			-- Skip audio frame if it is necessary
+			
+	set_audio_skip(a_audio_skip:BOOLEAN)
+			-- Assign `a_audio_skip' to `audio_skip'
+		do
+			audio_skip := a_audio_skip
+		ensure
+			Is_Assign: audio_skip ~ a_audio_skip
+		end
 
-	first_scan_line:INTEGER
+	first_scan_line:INTEGER assign set_first_scan_line
 			-- The first video line to scan
+			
+	set_first_scan_line(a_first_scan_line:INTEGER)
+			-- Assign `a_first_scan_line' to `first_scan_line'
+		do
+			first_scan_line := a_first_scan_line
+		ensure
+			Is_Assign: first_scan_line ~ a_first_scan_line
+		end
 
-	last_scan_line:INTEGER
-			-- The last video line to sca
+	last_scan_line:INTEGER assign set_last_scan_line
+			-- The last video line to scan
+			
+	set_last_scan_line(a_last_scan_line:INTEGER)
+			-- Assign `a_last_scan_line' to `last_scan_line'
+		do
+			last_scan_line := a_last_scan_line
+		ensure
+			Is_Assign: last_scan_line ~ a_last_scan_line
+		end
 
-	must_stretch:BOOLEAN
+	must_stretch:BOOLEAN assign set_must_stretch
 			-- The Program must stretch the image when the window ratio
 			-- is not the same as the video image ratio
+			
+	set_must_stretch(a_must_stretch:BOOLEAN)
+			-- Assign `a_must_stretch' to `must_stretch'
+		do
+			must_stretch := a_must_stretch
+		ensure
+			Is_Assign: must_stretch ~ a_must_stretch
+		end
 
 	buttons:LIST[LIST[LIST[BUTTON_STATUS]]]
 			-- Every buttons for every controller
@@ -153,33 +263,105 @@ feature -- Access
 			-- The second list represent every button
 			-- the inner list represent possibly multiple
 			-- {BUTTON_STATUS} for the same button
-
-	sound_rate:INTEGER
+		
+	sound_rate:INTEGER assign set_sound_rate
 			-- The frequency of the sound samples
+			
+	set_sound_rate(a_sound_rate:INTEGER)
+			-- Assign `a_sound_rate' to `sound_rate'
+		do
+			sound_rate := a_sound_rate
+		ensure
+			Is_Assign: sound_rate ~ a_sound_rate
+		end
 
-	sound_buffer_size:INTEGER
+	sound_buffer_size:INTEGER assign set_sound_buffer_size
 			-- The number of millisecond of sound sample to put in the sound buffer
+			
+	set_sound_buffer_size(a_sound_buffer_size:INTEGER)
+			-- Assign `a_sound_buffer_size' to `sound_buffer_size'
+		do
+			sound_buffer_size := a_sound_buffer_size
+		ensure
+			Is_Assign: sound_buffer_size ~ a_sound_buffer_size
+		end
 
-	sound_volume:NATURAL_32
+	sound_volume:NATURAL_32 assign set_sound_volume
 			-- The master sound volume
+			
+	set_sound_volume(a_sound_volume:NATURAL_32)
+			-- Assign `a_sound_volume' to `sound_volume'
+		do
+			sound_volume := a_sound_volume
+		ensure
+			Is_Assign: sound_volume ~ a_sound_volume
+		end
 
-	sound_quality:INTEGER
+	sound_quality:INTEGER assign set_sound_quality
 			-- he quality of the generated sound
+			
+	set_sound_quality(a_sound_quality:INTEGER)
+			-- Assign `a_sound_quality' to `sound_quality'
+		do
+			sound_quality := a_sound_quality
+		ensure
+			Is_Assign: sound_quality ~ a_sound_quality
+		end
 
-	sound_triangle_volume:NATURAL_32
+	sound_triangle_volume:NATURAL_32 assign set_sound_triangle_volume
 			-- The volume of the triangle sound channel
+			
+	set_sound_triangle_volume(a_sound_triangle_volume:NATURAL_32)
+			-- Assign `a_sound_triangle_volume' to `sound_triangle_volume'
+		do
+			sound_triangle_volume := a_sound_triangle_volume
+		ensure
+			Is_Assign: sound_triangle_volume ~ a_sound_triangle_volume
+		end
 
-	sound_square1_volume:NATURAL_32
+	sound_square1_volume:NATURAL_32 assign set_sound_square1_volume
 			-- The volume of the first square sound channel
+			
+	set_sound_square1_volume(a_sound_square1_volume:NATURAL_32)
+			-- Assign `a_sound_square1_volume' to `sound_square1_volume'
+		do
+			sound_square1_volume := a_sound_square1_volume
+		ensure
+			Is_Assign: sound_square1_volume ~ a_sound_square1_volume
+		end
 
-	sound_square2_volume:NATURAL_32
+	sound_square2_volume:NATURAL_32 assign set_sound_square2_volume
 			-- The volume of the second square sound channel
+			
+	set_sound_square2_volume(a_sound_square2_volume:NATURAL_32)
+			-- Assign `a_sound_square2_volume' to `sound_square2_volume'
+		do
+			sound_square2_volume := a_sound_square2_volume
+		ensure
+			Is_Assign: sound_square2_volume ~ a_sound_square2_volume
+		end
 
-	sound_noise_volume:NATURAL_32
+	sound_noise_volume:NATURAL_32 assign set_sound_noise_volume
 			-- The volume of the noise sound channel
+			
+	set_sound_noise_volume(a_sound_noise_volume:NATURAL_32)
+			-- Assign `a_sound_noise_volume' to `sound_noise_volume'
+		do
+			sound_noise_volume := a_sound_noise_volume
+		ensure
+			Is_Assign: sound_noise_volume ~ a_sound_noise_volume
+		end
 
-	sound_pcm_volume:NATURAL_32
+	sound_pcm_volume:NATURAL_32 assign set_sound_pcm_volume
 			-- The volume of the PCM sound channel
+			
+	set_sound_pcm_volume(a_sound_pcm_volume:NATURAL_32)
+			-- Assign `a_sound_pcm_volume' to `sound_pcm_volume'
+		do
+			sound_pcm_volume := a_sound_pcm_volume
+		ensure
+			Is_Assign: sound_pcm_volume ~ a_sound_pcm_volume
+		end
 
 feature{NONE} -- Implementation
 
