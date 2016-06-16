@@ -9,6 +9,9 @@ class
 
 inherit
 	KEYBOARD_STATUS
+		redefine
+			manifest
+		end
 
 create
 	make
@@ -34,7 +37,7 @@ feature -- Access
 	manifest:READABLE_STRING_GENERAL
 			-- <Precursor>
 		do
-			Result := manifest_keyboard_physical + key_code.out
+			Result := Precursor {KEYBOARD_STATUS} + manifest_keyboard_physical + key_code.out
 		end
 
 note

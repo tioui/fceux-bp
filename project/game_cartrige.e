@@ -27,6 +27,7 @@ feature -- Access
 		end
 
 	name:READABLE_STRING_GENERAL
+			-- A text representation of `Current'
 		require
 			Exists: exists
 		local
@@ -39,6 +40,7 @@ feature -- Access
 		end
 
 	mapper_number:INTEGER
+			-- Ne index of the internal mapper used
 		require
 			Exists: exists
 		do
@@ -49,6 +51,7 @@ feature -- Access
 feature {FCEUX_EMULATOR} -- Implementation
 
 	item:POINTER
+			-- Internal pointer
 
 feature {NONE} -- Externals
 

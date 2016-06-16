@@ -48,7 +48,6 @@
 			<visible class="FCEUX_DRIVER" feature="fceud_message"/>
 			<visible class="FCEUX_DRIVER" feature="fceud_set_palette"/>
 			<visible class="FCEUX_DRIVER" feature="fceud_video_changed"/>
-			<visible class="FCEUX_DRIVER" feature="audio_callback"/>
 		</cluster>
 	</target>
 </system>

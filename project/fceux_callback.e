@@ -16,9 +16,10 @@ feature {NONE} -- Implementation
 			set_eiffel_driver_callback_object(Current);
 		end
 
-feature -- Acess
+feature -- Access
 
 	close
+			-- free `Current'
 		do
 			unset_eiffel_driver_callback_object
 		end

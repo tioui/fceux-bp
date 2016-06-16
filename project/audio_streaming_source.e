@@ -14,11 +14,11 @@ inherit
 			is_stop as is_source_stop,
 			is_al_stop as is_stop
 		export
-			{AUDIO_MANAGER} queue_buffer, buffer_tail, buffer_head, nb_buffer, is_stop
+			{AUDIO_MANAGER} queue_buffer, buffer_tail, buffer_head, buffers_count, is_stop
 			{NONE}
 				queue_sound, queue_sound_loop, queue_sound_infinite_loop, sound_queued
 		redefine
-			clear_processed_buffers, nb_buffer
+			clear_processed_buffers, buffers_count
 		end
 
 create
@@ -26,7 +26,7 @@ create
 
 feature -- Access
 
-	nb_buffer:INTEGER
+	buffers_count:INTEGER
 			-- The number of internal buffer in `Current'
 		once ("PROCESS")
 			Result:=10

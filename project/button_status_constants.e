@@ -9,22 +9,70 @@ deferred class
 
 feature {NONE} -- Constants
 
+	manifest_keyboard:STRING_32
+			-- The prefix of the manifest text for keyboard
+		once
+			Result := {STRING_32}"Keyboard_"
+		end
+
 	manifest_keyboard_name:STRING_32
 			-- The prefix of the manifest text for keyboard name
 		once
-			Result := {STRING_32}"Keyboard_Name_"
+			Result := {STRING_32}"Name_"
 		end
 
 	manifest_keyboard_virtual:STRING_32
 			-- The prefix of the manifest text for virtual keyboard code
 		once
-			Result := {STRING_32}"Keyboard_Virtual_"
+			Result := {STRING_32}"Virtual_"
 		end
 
 	Manifest_keyboard_physical:STRING_32
 			-- The prefix of the manifest text for physical keyboard code
 		once
-			Result := {STRING_32}"Keyboard_Physical_"
+			Result := {STRING_32}"Physical_"
+		end
+
+	Manifest_joystick:STRING_32
+			-- The prefix of the manifest text for joystick
+		once
+			Result := {STRING_32}"Joystick_"
+		end
+
+	Manifest_joystick_axis:STRING_32
+			-- The prefix of the manifest text for joystick
+		once
+			Result := {STRING_32}"_Axis_"
+		end
+
+	Manifest_joystick_axis_positive:STRING_32
+			-- The suffix of the manifest text for joystick
+		once
+			Result := {STRING_32}"+"
+		end
+
+	Manifest_joystick_axis_negative:STRING_32
+			-- The suffix of the manifest text for joystick
+		once
+			Result := {STRING_32}"-"
+		end
+
+	Manifest_joystick_ball:STRING_32
+			-- The prefix of the manifest text for joystick
+		once
+			Result := {STRING_32}"_Ball_"
+		end
+
+	Manifest_joystick_button:STRING_32
+			-- The prefix of the manifest text for joystick
+		once
+			Result := {STRING_32}"_Button_"
+		end
+
+	Manifest_joystick_hat:STRING_32
+			-- The prefix of the manifest text for joystick
+		once
+			Result := {STRING_32}"_Hat_"
 		end
 
 

@@ -11,6 +11,8 @@ inherit
 	KEYBOARD_STATUS
 		rename
 			make as make_with_code
+		redefine
+			manifest
 		end
 
 create
@@ -49,7 +51,7 @@ feature -- Access
 	manifest:READABLE_STRING_GENERAL
 			-- <Precursor>
 		do
-			Result := manifest_keyboard_virtual + key_code.out.as_string_32
+			Result := Precursor {KEYBOARD_STATUS} + manifest_keyboard_virtual + key_code.out.as_string_32
 		end
 
 note

@@ -8,30 +8,33 @@ class
 	EMULATION_ENGINE
 
 inherit
-	GAME_LIBRARY_SHARED
+	ENGINE
 		redefine
-			default_create
+			make, run
 		end
 	AUDIO_LIBRARY_SHARED
-		redefine
-			default_create
+		export
+			{NONE} all
 		end
 	ERROR_CONSTANTS
-		redefine
-			default_create
+		export
+			{NONE} all
 		end
+
+create
+	make
 
 feature {NONE} -- Initialization
 
-	default_create
-			-- Initialization of `Current'
+	make(a_configuration:CONFIGURATION; a_window:GAME_WINDOW_RENDERED)
+			-- <Precursor>
 		do
+			Precursor {ENGINE}(a_configuration, a_window)
 			error_index := No_error
-			initialize_base_directory
-			create configuration
+			is_game_open := False
 			create input_manager.make(configuration)
 			create emulator.make (configuration)
-			create video_manager.make (configuration, emulator)
+			create video_manager.make (window, configuration, emulator)
 			error_index := video_manager.error_index
 			create driver.make(configuration, emulator, video_manager)
 			create audio_manager.make(configuration, emulator)
@@ -43,21 +46,6 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Access
-
-	has_error:BOOLEAN
-			-- An error occured
-		do
-			Result := error_index /= No_error
-		end
-
-	error_index:INTEGER
-			-- A error index to indicate the error type (0 for No Error)
-
-	base_directory:READABLE_STRING_GENERAL
-			-- Th directory to used in `Current'
-
-	configuration:CONFIGURATION
-			-- Every configurations of the system
 
 	emulator:FCEUX_EMULATOR
 			-- The emulator backend
@@ -74,7 +62,7 @@ feature -- Access
 	audio_manager:AUDIO_MANAGER
 			-- Manage audio frame and audio system of `Current'
 
-	run_game(a_game_file:READABLE_STRING_GENERAL; a_ntsc, a_pal:BOOLEAN)
+	open_game(a_game_file:READABLE_STRING_GENERAL; a_ntsc, a_pal:BOOLEAN)
 			-- Execute the emulator on the game from the file `a_game_file'
 			-- Using `a_ntsc' or `a_pal' video mode. If `a_ntsc' and
 			-- `a_pal' are not set, the emulator will try to autodetect the
@@ -85,6 +73,7 @@ feature -- Access
 		local
 			l_index:INTEGER
 		do
+			is_game_open := False
 			emulator.load_game (a_game_file, not a_ntsc and not a_pal)
 			if emulator.has_error then
 				error_index := game_file_not_valid
@@ -95,59 +84,80 @@ feature -- Access
 					l_index := l_index + 1
 				end
 				emulator.set_input_gamepad (configuration.buttons.count)
-				game_library.quit_signal_actions.extend (agent on_quit)
-				video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
-				video_manager.window.key_released_actions.extend (agent on_key_released)
-				desired_fps_delta :=  1000 / emulator.desired_fps
+				desired_fps_delta := 1000 / emulator.desired_fps
 				audio_manager.prepare(desired_fps_delta)
-				resume
+				is_game_open := True
 			end
+		ensure
+			Open_Or_Error: not is_game_open implies has_error
 		end
 
+	is_game_open:BOOLEAN
+			-- A game has been properly open
+
 	close
+			-- Be sure that everything is freed
 		do
 			driver.close
 		end
 
-	resume
+	initialize_events
+			-- <Precursor>
+		do
+			quit_asked := False
+			game_library.quit_signal_actions.extend (agent on_quit)
+			video_manager.window.key_pressed_actions.extend (agent on_key_pressed)
+			video_manager.window.key_released_actions.extend (agent on_key_released)
+		end
+
+	run
+			-- <Precursor>
+		require else
+			Game_Open: is_game_open
 		local
 			l_timestamp:NATURAL_32
 			l_emulate_action:PROCEDURE[TUPLE]
 --			l_fps:REAL_64
 		do
---			number_frame := 0
-			from
-				must_quit := False
-				next_frame := game_library.time_since_create
-			until
-				must_quit
-			loop
-				if game_library.time_since_create > (next_frame + (desired_fps_delta * 2)) then
-					l_emulate_action := agent emulator.emulate_skip_audio_video
-					print("Skipping audio and video frame%N")
-				elseif game_library.time_since_create > (next_frame + desired_fps_delta) then
-					l_emulate_action := agent emulator.emulate_skip_video
-					print("Skipping video frame%N")
-				else
-					l_emulate_action := agent emulator.emulate
-				end
+			if is_game_open then
+				initialize_events
+				desired_fps_delta :=  1000 / emulator.desired_fps
+	--			number_frame := 0
 				from
-					l_timestamp := game_library.time_since_create
+					next_frame := game_library.time_since_create
 				until
-					l_timestamp > (next_frame + desired_fps_delta)
+					must_stop
 				loop
+					if game_library.time_since_create > (next_frame + (desired_fps_delta * 2)) then
+						l_emulate_action := agent emulator.emulate_skip_audio_video
+						print("Skipping audio and video frame%N")
+					elseif game_library.time_since_create > (next_frame + desired_fps_delta) then
+						l_emulate_action := agent emulator.emulate_skip_video
+						print("Skipping video frame%N")
+					else
+						l_emulate_action := agent emulator.emulate
+					end
+					from
+						l_timestamp := game_library.time_since_create
+					until
+						l_timestamp > (next_frame + desired_fps_delta)
+					loop
+						l_timestamp := game_library.time_since_create
+					end
+	--				print("Next Frame: " + next_frame.out + "%N")
+	--				l_fps := (1000 / (l_timestamp - fps_counter))
+	--				print("FPS: " + l_fps.out + "%N")
+	--				fps_counter := l_timestamp
+					next_frame := next_frame + desired_fps_delta
+					emulate_next_frame(l_emulate_action)
 					l_timestamp := game_library.time_since_create
+					if l_timestamp < (next_frame + (desired_fps_delta / 2)).floor.to_natural_32 then
+						game_library.delay (((next_frame + (desired_fps_delta / 2)).floor.to_natural_32) - l_timestamp)
+					end
 				end
---				print("Next Frame: " + next_frame.out + "%N")
---				l_fps := (1000 / (l_timestamp - fps_counter))
---				print("FPS: " + l_fps.out + "%N")
---				fps_counter := l_timestamp
-				next_frame := next_frame + desired_fps_delta
-				emulate_next_frame(l_emulate_action)
-				l_timestamp := game_library.time_since_create
-				if l_timestamp < (next_frame + (desired_fps_delta / 2)).floor.to_natural_32 then
-					game_library.delay (((next_frame + (desired_fps_delta / 2)).floor.to_natural_32) - l_timestamp)
-				end
+				Game_library.clear_all_events
+			else
+				error_index := General_error
 			end
 		end
 
@@ -200,34 +210,10 @@ feature {NONE} -- Implementation
 	desired_fps_delta:REAL_64
 			-- The number of milliseconds between two frames
 
-	must_quit:BOOLEAN
-			-- The game must stop
-
-	on_quit(a_timestamp:NATURAL)
-			-- When the user close the application
+	must_stop:BOOLEAN
+			-- The main loop must be stoped
 		do
-			must_quit := True
-		end
-
-	initialize_base_directory
-			-- Initialise `base_directory'
-		local
-			l_operating_environment: OPERATING_ENVIRONMENT
-			l_execution_environment: EXECUTION_ENVIRONMENT
-			l_directory:DIRECTORY
-
-		do
-			create l_operating_environment
-			create l_execution_environment
-			if attached l_execution_environment.home_directory_path as la_path then
-				base_directory := la_path.name + l_operating_environment.directory_separator.out + ".fceux-bp"
-				create l_directory.make_with_name (base_directory)
-				if not l_directory.exists or else not l_directory.is_readable then
-					base_directory := ""
-				end
-			else
-				base_directory := ""
-			end
+			Result := quit_asked
 		end
 
 note

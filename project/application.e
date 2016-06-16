@@ -21,18 +21,14 @@ feature {NONE} -- Initialization
 	make
 			-- Run application.
 		local
-			l_engine:detachable EMULATION_ENGINE
+			l_engine:detachable MAIN_ENGINE
 		do
 			game_library.enable_video
+			game_library.enable_joystick
 			audio_library.enable_sound
 			create l_engine
 			if not l_engine.has_error then
-				l_engine.run_game("/home/louis/Documents/Super Mario Bros 3 (U) (PRG 0).nes", False, False)
-				--l_engine.run_game("/home/louis/Documents/Super Mario Bros (E).nes", False, False)
-				if l_engine.error_index = Game_file_not_valid then
-					print("The ROM file is not valid.%N")
-				end
-				l_engine.close
+				l_engine.run
 			else
 				print("Unmanaged error. Will close now.%N")
 			end

@@ -16,8 +16,6 @@ feature {NONE} -- Initialization
 	make(a_configuration:CONFIGURATION; a_emulator:FCEUX_EMULATOR)
 			-- Initialization of `Current' using `a_emulator' as `emulator'
 			-- and `a_configuration' as `configuration'
-		local
-			l_buffer_size:INTEGER
 		do
 			configuration := a_configuration
 			emulator := a_emulator
@@ -53,7 +51,7 @@ feature -- Access
 
 
 	play_samples(a_buffer:POINTER; a_count: INTEGER_32)
-			-- Play the sont pointed by `a_buffer' of len `a_count'
+			-- Play the sound pointed by `a_buffer' of len `a_count'
 		require
 			Prepared: is_prepared
 		do
@@ -61,7 +59,7 @@ feature -- Access
 			if not source.is_playing or source.is_stop then
 				source.play
 			end
-			if source.buffer_tail /= (source.buffer_head + 1) \\ source.Nb_buffer then
+			if source.buffer_tail /= (source.buffer_head + 1) \\ source.buffers_count then
 				if not a_buffer.is_default_pointer and a_count > 0 then
 					adapt_buffer(a_buffer, a_count)
 					source.queue_buffer (managed_buffer.item, a_count * 2, 1, 16, 44100)

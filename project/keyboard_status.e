@@ -38,6 +38,12 @@ feature -- Access
 		deferred
 		end
 
+	manifest:READABLE_STRING_GENERAL
+			-- <Precursor>
+		do
+			Result := manifest_keyboard
+		end
+
 note
 	license: "[
 		    Copyright (C) 2016 Louis Marchand

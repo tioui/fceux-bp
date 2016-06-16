@@ -29,14 +29,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make(a_configuration:CONFIGURATION; a_emulator: FCEUX_EMULATOR)
+	make(
+				a_window:GAME_WINDOW_RENDERED; a_configuration:CONFIGURATION;
+				a_emulator: FCEUX_EMULATOR
+		)
 			-- Initialization of `Current' using `a_configuration' as `configuration'
 			-- and `a_emulator' as `emulator'
 		local
-			l_window_builder:GAME_WINDOW_RENDERED_BUILDER
 			l_pixel_format:GAME_PIXEL_FORMAT
 		do
-			create l_window_builder
+			window := a_window
 			error_index := No_error
 			create color_palette.make (256 * 3)
 			across 0 |..| 255 as la_index loop
@@ -44,47 +46,12 @@ feature {NONE} -- Initialization
 			end
 			emulator := a_emulator
 			configuration := a_configuration
-			l_window_builder.set_dimension (configuration.window_width.to_integer_32, configuration.window_height.to_integer_32)
-			l_window_builder.enable_resizable
-			window := l_window_builder.generate_window
-			if configuration.full_screen then
-				window.set_display_mode (fullscreen_display_mode)
-				window.set_fullscreen
-			end
 			create l_pixel_format.default_create
 			l_pixel_format.set_rgb888
 			create texture.make (window.renderer, l_pixel_format, 256, 240)
 			create on_video_change
 			first_scan_line := configuration.first_scan_line
 			last_scan_line := configuration.last_scan_line
-			if not configuration.must_stretch then
-				window.renderer.set_logical_size (256, 240)
-			end
-		end
-
-	fullscreen_display_mode:GAME_DISPLAY_MODE
-		local
-			l_mode:GAME_DISPLAY_MODE
-			l_displays: LIST [GAME_DISPLAY]
-			l_display:GAME_DISPLAY
-		do
-			l_displays := game_library.displays
-			if l_displays.valid_index (1) then
-				if l_displays.valid_index (configuration.full_screen_display_index) then
-					l_display := l_displays.at (configuration.full_screen_display_index)
-				else
-					l_display := l_displays.at (1)
-				end
-				if configuration.full_screen_width = 0 or configuration.full_screen_height = 0 then
-					Result := l_display.current_mode
-				else
-					create l_mode.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
-					Result := l_display.closest_mode (l_mode)
-				end
-			else
-				create Result.make (configuration.full_screen_width.to_integer_32, configuration.full_screen_height.to_integer_32)
-				error_index := Cannot_Found_Display
-			end
 		end
 
 

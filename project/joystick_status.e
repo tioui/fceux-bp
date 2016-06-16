@@ -4,15 +4,66 @@ note
 	date: "Sat, 14 May 2016 01:07:03 +0000"
 	revision: "0.1"
 
-class
+deferred class
 	JOYSTICK_STATUS
 
 inherit
 	BUTTON_STATUS
+	GAME_LIBRARY_SHARED
+
+feature {NONE} -- Initialization
+
+	make_with_index(a_joystick_index:INTEGER)
+			-- Initialization of `Current' using `a_joystick_index' to initialize `joystick'
+		do
+			across game_library.joysticks as la_joysticks loop
+				if la_joysticks.item.index = a_joystick_index then
+					internal_joystick := la_joysticks.item
+					if not la_joysticks.item.is_open then
+						la_joysticks.item.open
+					end
+				end
+			end
+		end
 
 feature -- Access
 
+	has_error:BOOLEAN
+			-- Set if an error occured when creating `Current'
+		do
+			Result := not attached internal_joystick
+		end
+
+	joystick:GAME_JOYSTICK
+			-- The {GAME_JOYSTICK} to poll for status
+		require
+			No_Error: not has_error
+		do
+			check attached internal_joystick as la_joystick then
+				Result := la_joystick
+			end
+		end
+
+
+	manifest:READABLE_STRING_GENERAL
+			-- <Precursor>
+		require else
+			No_Error: not has_error
+		do
+			if has_error then
+				Result := Manifest_joystick + "0"
+			else
+				Result := Manifest_joystick + joystick.index.out
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	internal_joystick: detachable GAME_JOYSTICK
+			-- The internal representation of `joystick'
+
 invariant
+	Error_Valid: not has_error implies attached internal_joystick
 
 note
 	license: "[

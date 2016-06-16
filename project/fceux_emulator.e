@@ -105,8 +105,6 @@ feature -- Access
 		do
 			fceui_set_input(a_port - 1, Si_gamepad, input_buffer.item + (a_port - 1), 0)
 			fceui_set_input_fc (sifc_none, create {POINTER}, 0)
-		ensure
-			Buffer_Is_Set: attached input_buffer as la_buffer and then la_buffer.count = 4
 		end
 
 	input_buffer:MANAGED_POINTER

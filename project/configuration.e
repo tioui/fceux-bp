@@ -13,10 +13,28 @@ inherit
 			default_create
 		end
 
+create
+	default_create,
+	make_with_base_directory
+
 feature {NONE} -- Initialization
 
 	default_create
 			-- Initialization of `Current'
+		do
+			initialize_base_directory
+			default_initialization
+		end
+
+	make_with_base_directory(a_directory:READABLE_STRING_GENERAL)
+			-- Initialization of `Current' using `a_directory' as `base_directory'
+		do
+			base_directory := a_directory
+			default_initialization
+		end
+
+	default_initialization
+			-- Initialize every configurations in `Current'
 		do
 			create button_factory
 			window_width := 256
@@ -31,7 +49,7 @@ feature {NONE} -- Initialization
 			autodetect_video_mode := True
 			video_skip := True
 			audio_skip := True
-			must_stretch := True
+			must_stretch := False
 			initialize_buttons
 			sound_rate := 44100
 			sound_volume := 150
@@ -50,33 +68,50 @@ feature {NONE} -- Initialization
 		do
 			create {ARRAYED_LIST[LIST[LIST[BUTTON_STATUS]]]} buttons.make (2)
 			create l_controller.make (8)
-			adding_virtual_button(l_controller, "keyboard_name_Right")
-			adding_virtual_button(l_controller, "keyboard_name_Left")
-			adding_virtual_button(l_controller, "keyboard_name_Down")
-			adding_virtual_button(l_controller, "keyboard_name_Up")
-			adding_virtual_button(l_controller, "keyboard_name_a")
-			adding_virtual_button(l_controller, "keyboard_name_s")
-			adding_virtual_button(l_controller, "keyboard_name_d")
-			adding_virtual_button(l_controller, "keyboard_name_f")
+			adding_button(l_controller, "keyboard_name_Right;Joystick_0_Button_12")
+			adding_button(l_controller, "keyboard_name_Left;Joystick_0_Button_11")
+			adding_button(l_controller, "keyboard_name_Down;Joystick_0_Button_14")
+			adding_button(l_controller, "keyboard_name_Up;Joystick_0_Button_13")
+			adding_button(l_controller, "keyboard_name_a;Joystick_0_Button_7")
+			adding_button(l_controller, "keyboard_name_s;Joystick_0_Button_6")
+			adding_button(l_controller, "keyboard_name_d;Joystick_0_Button_0")
+			adding_button(l_controller, "keyboard_name_f;Joystick_0_Button_1")
+			buttons.extend(l_controller)
+			create l_controller.make (8)
+			adding_button(l_controller, "keyboard_name_l;Joystick_1_Button_12")
+			adding_button(l_controller, "keyboard_name_j;Joystick_1_Button_11")
+			adding_button(l_controller, "keyboard_name_k;Joystick_1_Button_14")
+			adding_button(l_controller, "keyboard_name_i;Joystick_1_Button_13")
+			adding_button(l_controller, "keyboard_name_q;Joystick_1_Button_7")
+			adding_button(l_controller, "keyboard_name_w;Joystick_1_Button_6")
+			adding_button(l_controller, "keyboard_name_e;Joystick_1_Button_1")
+			adding_button(l_controller, "keyboard_name_r;Joystick_1_Button_0")
 			buttons.extend(l_controller)
 		end
 
-	adding_virtual_button(
+	adding_button(
 						a_controller:LIST[LIST[BUTTON_STATUS]];
 						a_manifest:READABLE_STRING_GENERAL
 					)
 			-- Add a {BUTTON_STATUS} to `a_controller' from `a_manifest' text
 		local
-			a_buttons:LINKED_LIST[BUTTON_STATUS]
+			a_buttons:ARRAYED_LIST[BUTTON_STATUS]
+			a_manifests:LIST [READABLE_STRING_GENERAL]
 		do
-			if attached button_factory.translate_manifest (a_manifest) as la_status then
-				create a_buttons.make
-				a_buttons.extend (la_status)
-				a_controller.extend (a_buttons)
+			a_manifests := a_manifest.split ({CHARACTER_32}';')
+			create a_buttons.make(a_manifests.count)
+			across a_manifests as la_manifest loop
+				if attached button_factory.translate_manifest (la_manifest.item) as la_status then
+					a_buttons.extend (la_status)
+				end
 			end
+			a_controller.extend (a_buttons)
 		end
 
 feature -- Access
+
+	base_directory:READABLE_STRING_GENERAL
+			-- Th directory to used in `Current'
 
 	window_width, window_height:NATURAL
 			-- The dimension of the {GAME_WINDOW}
@@ -150,6 +185,27 @@ feature{NONE} -- Implementation
 
 	button_factory:BUTTON_STATUS_FACTORY
 			-- The factory used to generate {BUTTON_STATUS}
+
+	initialize_base_directory
+			-- Initialise `base_directory'
+		local
+			l_operating_environment: OPERATING_ENVIRONMENT
+			l_execution_environment: EXECUTION_ENVIRONMENT
+			l_directory:DIRECTORY
+		do
+			create l_operating_environment
+			create l_execution_environment
+			if attached l_execution_environment.home_directory_path as la_path then
+				base_directory := la_path.name + l_operating_environment.directory_separator.out + ".fceux-bp"
+				create l_directory.make_with_name (base_directory)
+				if not l_directory.exists or else not l_directory.is_readable then
+					base_directory := ""
+				end
+			else
+				base_directory := ""
+			end
+		end
+
 
 invariant
 	Skip_Valid: audio_skip implies video_skip
