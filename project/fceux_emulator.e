@@ -103,7 +103,7 @@ feature -- Access
 			is_prepared
 			a_port >= 1 and a_port <= 2
 		do
-			fceui_set_input(a_port - 1, Si_gamepad, input_buffer.item + (a_port - 1), 0)
+			fceui_set_input(a_port - 1, Si_gamepad, input_buffer.item, 0)
 			fceui_set_input_fc (sifc_none, create {POINTER}, 0)
 		end
 
