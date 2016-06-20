@@ -39,6 +39,11 @@
 		<library name="audio" location="$ISE_LIBRARY\contrib\library\game2\audio\audio-safe.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="game_core" location="$ISE_LIBRARY\contrib\library\game2\game_core\game_core-safe.ecf" readonly="false"/>
+		<library name="game_effects" location="$ISE_LIBRARY\contrib\library\game2\game_effects\game_effects-safe.ecf"/>
+		<library name="game_image_file" location="$ISE_LIBRARY\contrib\library\game2\game_image_file\game_image_file-safe.ecf"/>
+		<library name="game_shared" location="$ISE_LIBRARY\contrib\library\game2\game_shared\game_shared-safe.ecf"/>
+		<library name="game_text" location="$ISE_LIBRARY\contrib\library\game2\game_text\game_text-safe.ecf"/>
+		<library name="game_tools" location="$ISE_LIBRARY\contrib\library\game2\game_tools\game_tools-safe.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf"/>
 		<cluster name="fceux-bp" location=".\" recursive="true">
 			<file_rule>

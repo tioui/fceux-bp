@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			audio_library.enable_sound
 			create l_engine
 			if not l_engine.has_error then
-				l_engine.run_game("/home/louis/Documents/Super Mario Bros 3 (U) (PRG 0).nes", False, False)
+				l_engine.run_game("F:/Gamedesign/Eiffel/fceux-bp/project/Pac-Man (USA) (Namco).nes", False, False)
 				--l_engine.run_game("/home/louis/Documents/Super Mario Bros (E).nes", False, False)
 				if l_engine.error_index = Game_file_not_valid then
 					print("The ROM file is not valid.%N")
