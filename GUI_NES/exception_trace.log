@@ -1,0 +1,523 @@
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+TEXT_FONT           make @1                is_text_enable:              
+<0000000003BFCEC8>                         Precondition violated.        Fail
+-------------------------------------------------------------------------------
+MENU_PAUSE          make @1                                             
+<0000000003BFCEA8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         on_key_pressed @4                                   
+<0000000003BD1F48>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003BD4798>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003BD4798>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003BD4618>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_WINDOW_RENDERED
+                    key_pressed_events_dispatcher @4
+<0000000003BD2958>  (From GAME_WINDOW_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_WINDOW_RENDERED
+                    inline-agent#2 of make @1
+<0000000003BD2958>  (From GAME_WINDOW_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003BD2E48>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003BD2E48>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003BD0AE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    decode_event @7        
+<0000000003BD0768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    poll_event @8          
+<0000000003BD0768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    update_events @1       
+<0000000003BD05E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    launch @4              
+<0000000003BD05E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         make @13                                            
+<0000000003BD1F48>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @3                                             
+<0000000003BD05A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003BD05A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+ANY                 show @8                Segmentation violation:      
+<0000000003ED03ED>  (From MENU_PAUSE)      Operating system signal.      Fail
+-------------------------------------------------------------------------------
+ANY                 show @8                                             
+<0000000003ED03ED>  (From MENU_PAUSE)      Routine failure.              Fail
+-------------------------------------------------------------------------------
+ANY                 on_iteration @1                                     
+<0000000003ED03ED>  (From MENU_PAUSE)      Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         on_iteration @4                                     
+<0000000004871178>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000004871618>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000004871618>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000004871558>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    inline-agent#5 of make @1
+<00000000048711E8>  (From GAME_COMMON_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<00000000048729D8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<00000000048729D8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<00000000048730A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    poll_event @4          
+<0000000004872EA8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    update_events @1       
+<00000000048711E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    launch @4              
+<00000000048711E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         make @13                                            
+<0000000004871178>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @4                                             
+<0000000004871118>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000004871118>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+ARRAYED_LIST        put_i_th @2            valid_key:                   
+<0000000003EBE9C8>                         Precondition violated.        Fail
+-------------------------------------------------------------------------------
+MENU_SETTINGS       make @21                                            
+<0000000003EB8AE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         on_iteration @7                                     
+<0000000003E32158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003E47048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003E47048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003E46EB8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    inline-agent#5 of make @1
+<0000000003E305E8>  (From GAME_COMMON_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003E31BE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003E31BE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003E308A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    poll_event @4          
+<0000000003E30768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    update_events @1       
+<0000000003E305E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    launch @4              
+<0000000003E305E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         make @14                                            
+<0000000003E32158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<0000000003E305A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003E305A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+GAME_TEXTURE        make_by_pointer @1     a_ptr_not_null:              
+<0000000003DDE9A8>  (From MEMORY_STRUCTURE)
+                                           Precondition violated.        Fail
+-------------------------------------------------------------------------------
+GAME_TEXTURE        make_from_image @5                                  
+<0000000003DDE9A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_TEXTURE        make_from_surface @1                                
+<0000000003DDE9A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+UI_CHECKBOX         make @21                                            
+<0000000003DDD2A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PANEL_FILE          make @2                                             
+<0000000003DDD238>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+MENU_SETTINGS       make @18                                            
+<0000000003DD72F8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         on_iteration @7                                     
+<0000000003D42158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003D57048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003D57048>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003D56EB8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    inline-agent#5 of make @1
+<0000000003D405E8>  (From GAME_COMMON_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003D41BE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003D41BE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003D408A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    poll_event @4          
+<0000000003D40768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    update_events @1       
+<0000000003D405E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    launch @4              
+<0000000003D405E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         make @14                                            
+<0000000003D42158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<0000000003D405A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003D405A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+LINKED_LIST         i_th @2                valid_index:                 
+<0000000003DD0288>  (From CHAIN)           Precondition violated.        Fail
+-------------------------------------------------------------------------------
+MENU_SETTINGS       on_key_pressed @2                                   
+<0000000003DCA308>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         on_key_pressed @2                                   
+<0000000003CF2158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003D07918>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003D07918>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003D07788>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_WINDOW_RENDERED
+                    key_pressed_events_dispatcher @4
+<0000000003D05AC8>  (From GAME_WINDOW_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_WINDOW_RENDERED
+                    inline-agent#2 of make @1
+<0000000003D05AC8>  (From GAME_WINDOW_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003D05FB8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003D05FB8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003CF0AE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    decode_event @7        
+<0000000003CF0768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    poll_event @8          
+<0000000003CF0768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    update_events @1       
+<0000000003CF05E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    launch @4              
+<0000000003CF05E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         make @14                                            
+<0000000003CF2158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<0000000003CF05A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003CF05A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+LINKED_LIST         i_th @2                valid_index:                 
+<0000000003D047F8>  (From CHAIN)           Precondition violated.        Fail
+-------------------------------------------------------------------------------
+MENU_SETTINGS       on_key_pressed @2                                   
+<0000000003CFE878>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         on_key_pressed @2                                   
+<0000000003C52158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003C67918>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003C67918>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003C67788>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_WINDOW_RENDERED
+                    key_pressed_events_dispatcher @4
+<0000000003C65AC8>  (From GAME_WINDOW_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_WINDOW_RENDERED
+                    inline-agent#2 of make @1
+<0000000003C65AC8>  (From GAME_WINDOW_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           fast_call                                           
+<0000000003C65FB8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+PROCEDURE           call @5                                             
+<0000000003C65FB8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ACTION_SEQUENCE     call @22                                            
+<0000000003C50AE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    decode_event @7        
+<0000000003C50768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_EVENTS_CONTROLLER
+                    poll_event @8          
+<0000000003C50768>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    update_events @1       
+<0000000003C505E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    launch @4              
+<0000000003C505E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_ENGINE         make @14                                            
+<0000000003C52158>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<0000000003C505A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         root's creation                                     
+<0000000003C505A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<00000000048D3088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<0000000004933088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<0000000004893088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<0000000004943088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<0000000004883088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<00000000048F3088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<0000000004A43088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
+
+gui_nes: PANIC: Unexpected harmful signal (Segmentation violation) ...
+
+gui_nes: system execution failed.
+Following is the set of recorded exceptions.
+NB: The raised panic may have induced completely inconsistent information:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+APPLICATION         root's creation        Unexpected harmful signal (Segmentation violation):
+<00000000049B3088>                         Eiffel run-time panic.        Bye
+-------------------------------------------------------------------------------
+
+gui_nes: dumping core to generate debugging information...
