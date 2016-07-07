@@ -19,11 +19,16 @@ create
 feature {NONE} -- Initialization
 
 	make (a_x, a_y, a_count: INTEGER; a_label: STRING; a_list: LIST[STRING_8]; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
-			-- Initialization of `Current'
+			-- Initialization of `Current' at position `a_x', `a_y' (to be assigned to `x' and `y'
+			-- `a_label' is the text to be shown above the list. Assigned to `label'
+			-- `a_list' contains the options to be selected. Assigned to `choices'
+			-- `a_font' is the font to print the text. Assigned to `font'
+			-- `a_renderer' to draw things. Assigned to `renderer'
 		require
 			not a_list.is_empty
 		local
 			l_temp_text: TEXT_SURFACE_BLENDED
+			l_symbol_font: TEXT_FONT
 		do
 			x := a_x
 			y := a_y
@@ -32,16 +37,22 @@ feature {NONE} -- Initialization
 			font := a_font
 			label := a_label
 			choices := a_list
-			create l_temp_text.make (label, font, create {GAME_COLOR}.make_rgb (255, 255, 255))
+			create l_symbol_font.make ("WINGDNG3.TTF", 24)
+			if l_symbol_font.is_openable then
+				l_symbol_font.open
+			else
+				print("Couldn't load the Font file")
+			end
+			create l_temp_text.make (label, font, create {GAME_COLOR}.make_rgb (0, 0, 0))
 			create label_texture.make_from_surface (renderer, l_temp_text)
 			width := 300
 			item_height := l_temp_text.height
 			choice_index := 1
 			selected_index := 1
-			create button_up.make (x, y + label_texture.height, width, 30, "UP", font, renderer)
+			create button_up.make (x, y + label_texture.height, width, 30, "abcdefgpABCDEFGP", l_symbol_font, renderer)
 			update_current_texture
 			height := current_texture.height
-			create button_down.make (x, y + label_texture.height + button_up.height + height, width, 30, "DOWN", font, renderer)
+			create button_down.make (x, y + label_texture.height + button_up.height + height, width, 30, "Qq", l_symbol_font, renderer)
 		ensure
 			button_same_widht: button_up.width = button_down.width
 		end
@@ -83,6 +94,9 @@ feature -- Implementation
 			end
 			current_texture := create {GAME_TEXTURE}.make_from_surface (renderer, l_surface)
 		end
+
+	is_done: BOOLEAN
+			-- True when player presses start, the A button or return
 
 	renderer: GAME_RENDERER
 			-- We need to keep a refenrence to the game window renderer to update `current_texture'
@@ -132,7 +146,11 @@ feature -- Implementation
 	on_click
 			-- <Precursor>
 		do
-			is_active := True
+			if is_active then
+				is_done := True
+			else
+				is_active := True
+			end
 		end
 
 	active_action (a_action: INTEGER)
@@ -157,8 +175,21 @@ feature -- Implementation
 					update_current_texture
 				end
 			end
-
 		end
+
+	dir_content(a_path: STRING): LINKED_LIST[STRING_8]
+            -- Returns file and directory names for the current directory.
+        local
+        	l_dir: DIRECTORY
+        do
+        	create Result.make
+        	create l_dir.make (a_path)
+            across
+                l_dir.entries as ic
+            loop
+                Result.extend (ic.item.name.as_string_8)
+            end
+        end
 
 feature -- Constants
 
