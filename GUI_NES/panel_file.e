@@ -33,6 +33,12 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+	selected_file:READABLE_STRING_GENERAL
+			-- The file presently selected by `Current'
+		do
+			Result := file_list.selected_file
+		end
+
 	active_action (a_action: INTEGER)
 			-- <Precursor>
 		do
