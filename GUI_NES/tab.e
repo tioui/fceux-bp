@@ -10,7 +10,7 @@ class
 inherit
 	UI_ITEM
 		redefine
-			set_is_active
+			activate, desactivate
 		end
 
 create
@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_x, a_y: INTEGER; a_text: STRING; a_renderer: GAME_RENDERER; a_font: TEXT_FONT)
+	make (a_x, a_y: INTEGER; a_text: READABLE_STRING_GENERAL; a_renderer: GAME_RENDERER; a_font: TEXT_FONT)
 			-- Initialization of `Current' using `a_renderer'
 			-- `a_text' is the label displayed on `Current'
 		require
@@ -52,17 +52,18 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	set_is_active(a_value: BOOLEAN)
-			-- Assign `a_value' to `is_active'
+	activate
+			-- <Precursor>
 		do
-			is_active := a_value
-			if is_active then
-				current_texture := active_texture
-			else
-				current_texture := normal_texture
-			end
-		ensure then
-			is_assigned: is_active = a_value
+			Precursor
+			current_texture := active_texture
+		end
+
+	desactivate
+			-- <Precursor>
+		do
+			Precursor
+			current_texture := normal_texture
 		end
 
 	active_texture, normal_texture: GAME_TEXTURE
@@ -71,13 +72,6 @@ feature -- Access
 	margin: INTEGER
 			-- Distance in pixel from the text to the border of `Current'
 
-feature -- Implementation
-
-	on_click
-			-- <Precursor>
-		do
-
-		end
 
 invariant
 

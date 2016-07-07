@@ -9,13 +9,16 @@ class
 
 inherit
 	UI_ITEM
+		redefine
+			active_action
+		end
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_x, a_y: INTEGER; a_text: STRING; a_renderer: GAME_RENDERER; a_font: TEXT_FONT)
+	make (a_x, a_y: INTEGER; a_text: READABLE_STRING_GENERAL; a_renderer: GAME_RENDERER; a_font: TEXT_FONT)
 			-- Initialization of `Current' using `a_renderer' to draw at position `a_x',`a_y'
 			-- `a_font' and `a_text' for the `label'
 		require
@@ -80,10 +83,13 @@ feature
 	unchecked_texture, checked_texture: GAME_TEXTURE
 			-- Texture representing the two states of `Current'
 
-	on_click
+
+	active_action (a_action: INTEGER)
 			-- <Precursor>
 		do
-			set_is_checked(not is_checked)
+			if a_action = RETURN then
+				set_is_checked(not is_checked)
+			end
 		end
 
 invariant

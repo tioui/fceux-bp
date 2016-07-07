@@ -15,7 +15,7 @@ create
 
 feature -- Initialisation
 
-	make (a_x, a_y, a_width, a_height: INTEGER; a_text: STRING; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
+	make (a_x, a_y, a_width, a_height: INTEGER; a_text: READABLE_STRING_GENERAL; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
 			-- Initialization of `Current' at position `a_x', `a_y' (assigned to `x' and `y').
 			-- The size `a_width' and `a_height' will be assigned to `width' and `height'
 			-- If `a_width' and `a_height' are less than the text dimensions, text will be croped
@@ -42,13 +42,6 @@ feature -- Initialisation
 			create current_texture.make_from_surface (a_renderer, l_button_surface)
 		end
 
-feature -- implementation
-
-	on_click
-			-- <Precursor>
-		do
-
-		end
 
 
 invariant

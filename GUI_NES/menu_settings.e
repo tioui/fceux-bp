@@ -35,7 +35,8 @@ feature {NONE} -- Initialization
 			tabs.extend (create {TAB}.make (tabs.last.x + tabs.last.width + tab_spacing, y, "CONTROLLER", a_game_window.renderer, font))
 			tabs.extend (create {TAB}.make (tabs.last.x + tabs.last.width + tab_spacing, y, "KEYMAP", a_game_window.renderer, font))
 			tabs.extend (create {TAB}.make (tabs.last.x + tabs.last.width + tab_spacing, y, "ABOUT", a_game_window.renderer, font))
-			tabs.first.is_active := True
+			tabs.first.activate
+			tabs.first.is_selected := True
 			create panels.make (4)
 			-- Important: Panels must be created in the same order as the tabs above
 			panels.extend (create {PANEL_FILE}.make (x, y + tabs.first.height, a_game_window.renderer, font))
@@ -44,7 +45,6 @@ feature {NONE} -- Initialization
 			panels.extend (create {PANEL_KEYMAP}.make (x, y + tabs.first.height, a_game_window.renderer, font))
 			panels.extend (create {PANEL_ABOUT}.make (x, y + tabs.first.height, a_game_window.renderer, font))
 			active_panel_index := 1
-			current_selection_index := 0
 			selected_tab_index := 1
 		ensure
 			font.is_open
@@ -65,14 +65,11 @@ feature
 	panels: ARRAYED_LIST[PANEL]
 			-- Contains the panels on which we display the settings
 
-	current_selection_index: INTEGER
-			-- current selection of the user, when 0 the `selected_tab_index' is used instead
-
 	active_panel_index: INTEGER
 			-- the current {PANEL} shown to the user
 
 	selected_tab_index: INTEGER
-			-- to navigate through the tabs when `current_selection_index' = 0
+			-- to navigate through the tabs
 
 	on_iteration(a_game_window:GAME_WINDOW_RENDERED)
 			-- <Precursor>
@@ -93,36 +90,19 @@ feature
 			-- <Precursor>
 		do
 			if a_key_state.is_down  then
-				if current_selection_index > 0 then
-					if panels[active_panel_index].items[current_selection_index].is_active then
-						panels[active_panel_index].items[current_selection_index].active_action (1)
-					else
-						panels[active_panel_index].items[current_selection_index].is_selected := False
-						current_selection_index := current_selection_index \\ panels[active_panel_index].items.count + 1
-						panels[active_panel_index].items[current_selection_index].is_selected := True
-					end
-				else
+				if panels[active_panel_index].current_selection_index = 0 then
 					tabs[selected_tab_index].is_selected := False
-					current_selection_index := current_selection_index \\ panels[active_panel_index].items.count + 1
-					panels[active_panel_index].items[current_selection_index].is_selected := True
 				end
-
+				panels[active_panel_index].active_action(DOWN)
 			elseif a_key_state.is_up then
-				if current_selection_index > 0 then
-					if panels[active_panel_index].items[current_selection_index].is_active then
-						panels[active_panel_index].items[current_selection_index].active_action (2)
-					else
-						panels[active_panel_index].items[current_selection_index].is_selected := False
-						current_selection_index := current_selection_index - 1
-						if current_selection_index = 0 then
-							tabs[selected_tab_index].is_selected := True
-						else
-							panels[active_panel_index].items[current_selection_index].is_selected := True
-						end
+				if panels[active_panel_index].current_selection_index > 0 then
+					panels[active_panel_index].active_action(UP)
+					if panels[active_panel_index].current_selection_index = 0 then
+						tabs[selected_tab_index].is_selected := True
 					end
 				end
 			elseif a_key_state.is_left then
-				if current_selection_index = 0 then
+				if panels[active_panel_index].current_selection_index = 0 then
 					tabs[selected_tab_index].is_selected := False
 					if selected_tab_index = 1 then
 						selected_tab_index := tabs.count
@@ -131,39 +111,30 @@ feature
 					end
 					tabs[selected_tab_index].is_selected := True
 				else
-					panels[active_panel_index].items[current_selection_index].is_selected := False
-					if current_selection_index > 1 then
-						current_selection_index := current_selection_index - 1
-					else
-						current_selection_index := panels[active_panel_index].items.count
-					end
-					panels[active_panel_index].items[current_selection_index].is_selected := True
+					panels[active_panel_index].active_action(LEFT)
 				end
 			elseif a_key_state.is_right then
-				if current_selection_index = 0 then
+				if panels[active_panel_index].current_selection_index = 0 then
 					tabs[selected_tab_index].is_selected := False
 					selected_tab_index := selected_tab_index \\ tabs.count + 1
 					tabs[selected_tab_index].is_selected := True
 				else
-					panels[active_panel_index].items[current_selection_index].is_selected := False
-					current_selection_index := current_selection_index \\ panels[active_panel_index].items.count + 1
-					panels[active_panel_index].items[current_selection_index].is_selected := True
+					panels[active_panel_index].active_action(RIGHT)
 				end
 			elseif a_key_state.is_escape then
-				if panels[active_panel_index].items[current_selection_index].is_active then
-					panels[active_panel_index].items[current_selection_index].is_active := False
-				else
+				panels[active_panel_index].active_action(ESCAPE)
+				if panels[active_panel_index].is_done then
 					is_done := True
 				end
 			elseif a_key_state.is_return then
-				if current_selection_index = 0 then
+				if panels[active_panel_index].current_selection_index = 0 then
 					if active_panel_index /= selected_tab_index then
-						tabs[active_panel_index].is_active := False
+						tabs[active_panel_index].desactivate
 						active_panel_index := selected_tab_index
-						tabs[active_panel_index].is_active := True
+						tabs[active_panel_index].activate
 					end
 				else
-					panels[active_panel_index].items[current_selection_index].on_click
+					panels[active_panel_index].active_action(RETURN)
 				end
 			end
 		end

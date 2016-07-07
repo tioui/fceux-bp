@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_game_window:GAME_WINDOW_RENDERED; a_options: ARRAYED_LIST[STRING])
+	make (a_game_window:GAME_WINDOW_RENDERED; a_options: LIST[READABLE_STRING_GENERAL])
 			-- Initialization of `Current'. Will be drawn on `a_game_window'
 			-- `a_options' must contain at least one {STRING}. Its content will be converted to game texture and shown to user.
 		require
@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 				has_error := True
 				print("Couldn't load the Font file")
 			end
-			create options.make(a_options.count)
+			create {ARRAYED_LIST [TUPLE[normal, active:GAME_TEXTURE]]}options.make(a_options.count)
 			across a_options as la_options loop
 				add_option(la_options.item, a_game_window.renderer)
 			end
@@ -45,7 +45,7 @@ feature
 	margin: INTEGER
 			-- The spacing between each menu item
 
-	options: ARRAYED_LIST [TUPLE[normal, active:GAME_TEXTURE]]
+	options: LIST [TUPLE[normal, active:GAME_TEXTURE]]
 			-- Contains {TEXT_SURFACE_BLENDED} of the options the user can choose from
 
 	set_centered (a_width, a_height: INTEGER)
@@ -98,7 +98,7 @@ feature
 			end
 		end
 
-	add_option(a_option_text: STRING; a_renderer: GAME_RENDERER)
+	add_option(a_option_text: READABLE_STRING_GENERAL; a_renderer: GAME_RENDERER)
 			-- add and option to `options'
 		require
 			not a_option_text.is_empty

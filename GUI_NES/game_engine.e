@@ -87,10 +87,10 @@ feature {NONE} -- Implementation
 			a_game_window.update
 		end
 
-	menu_pause_options: ARRAYED_LIST[STRING]
+	menu_pause_options: LIST[READABLE_STRING_GENERAL]
 			-- The choices that will be shown to the user on pause
 		do
-			create Result.make(5)
+			create {ARRAYED_LIST[READABLE_STRING_GENERAL]}Result.make(5)
 			Result.extend("RESUME GAME")
 			Result.extend("RESET GAME")
 			Result.extend("CONTROL PANEL")
@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	texture_from_file (a_renderer:GAME_RENDERER; a_image_path:STRING):GAME_TEXTURE
+	texture_from_file (a_renderer:GAME_RENDERER; a_image_path:READABLE_STRING_GENERAL):GAME_TEXTURE
 			-- Loads image from file `a_image_path' and returns it as a {GAME_SURFACE}
 		local
 			l_image:IMG_IMAGE_FILE

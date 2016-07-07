@@ -10,7 +10,7 @@ class
 inherit
 	UI_ITEM
 		redefine
-			active_action, show
+			active_action, show, activate
 		end
 
 create
@@ -18,10 +18,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_x, a_y, a_count: INTEGER; a_label: STRING; a_list: LIST[STRING_8]; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
+	make (a_x, a_y, a_count: INTEGER; a_label: READABLE_STRING_GENERAL; a_list: LIST[READABLE_STRING_GENERAL]; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
 			-- Initialization of `Current' at position `a_x', `a_y' (to be assigned to `x' and `y'
 			-- `a_label' is the text to be shown above the list. Assigned to `label'
 			-- `a_list' contains the options to be selected. Assigned to `choices'
+			-- `a_count' is the number of item of `a_list' to show. Assigned to `item_count'
 			-- `a_font' is the font to print the text. Assigned to `font'
 			-- `a_renderer' to draw things. Assigned to `renderer'
 		require
@@ -57,7 +58,36 @@ feature {NONE} -- Initialization
 			button_same_widht: button_up.width = button_down.width
 		end
 
-feature -- Implementation
+feature -- Access
+
+	set_choices(a_choices: LIST[READABLE_STRING_GENERAL])
+			-- Assign `choices' with the value of `a_choices'
+		do
+			choices := a_choices
+			choice_index := 1
+			selected_index := 1
+			update_current_texture
+		ensure
+			Is_Assign: choices ~ a_choices
+		end
+
+	selected_index: INTEGER
+			-- The current selection in `choices'
+
+	choices : LIST[READABLE_STRING_GENERAL] assign set_choices
+			-- A list of all the options to choose from
+
+	is_done: BOOLEAN
+			-- True when player presses start, the A button or return
+
+	activate
+			-- <Precursor>
+		do
+			Precursor
+			is_done := False
+		end
+
+feature {NONE} -- Implementation
 
 	update_current_texture
 			-- Converts the visible options in `choices' using `font'
@@ -95,9 +125,6 @@ feature -- Implementation
 			current_texture := create {GAME_TEXTURE}.make_from_surface (renderer, l_surface)
 		end
 
-	is_done: BOOLEAN
-			-- True when player presses start, the A button or return
-
 	renderer: GAME_RENDERER
 			-- We need to keep a refenrence to the game window renderer to update `current_texture'
 
@@ -115,14 +142,8 @@ feature -- Implementation
 	button_up, button_down: UI_BUTTON
 			-- The buttons used to browse through the list for the mouse user.
 
-	choices : LIST[STRING]
-			-- A list of all the options to choose from as {STRING}
-
 	choice_index: INTEGER
 			-- The current position  in `choices' to start drawing the options
-
-	selected_index: INTEGER
-			-- The current selection in `choices'
 
 	show (a_renderer: GAME_RENDERER)
 			-- <Precursor>
@@ -143,14 +164,10 @@ feature -- Implementation
 			end
 		end
 
-	on_click
-			-- <Precursor>
+	valid_selection
+			-- Check if the selected item is a valid selection to return and if so, set `is_done'
 		do
-			if is_active then
-				is_done := True
-			else
-				is_active := True
-			end
+			is_done := True
 		end
 
 	active_action (a_action: INTEGER)
@@ -174,27 +191,10 @@ feature -- Implementation
 					end
 					update_current_texture
 				end
+			when RETURN then
+				valid_selection
 			end
 		end
-
-	dir_content(a_path: STRING): LINKED_LIST[STRING_8]
-            -- Returns file and directory names for the current directory.
-        local
-        	l_dir: DIRECTORY
-        do
-        	create Result.make
-        	create l_dir.make (a_path)
-            across
-                l_dir.entries as ic
-            loop
-                Result.extend (ic.item.name.as_string_8)
-            end
-        end
-
-feature -- Constants
-
-	DOWN: INTEGER = 1
-	UP: INTEGER = 2
 
 invariant
 

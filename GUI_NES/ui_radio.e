@@ -15,7 +15,7 @@ create
 
 feature -- Initialization
 
-	make (a_x, a_y, a_width, a_height: INTEGER; a_text: STRING; a_list: LIST[STRING]; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
+	make (a_x, a_y, a_width, a_height: INTEGER; a_text: READABLE_STRING_GENERAL; a_list: LIST[READABLE_STRING_GENERAL]; a_font: TEXT_FONT; a_renderer: GAME_RENDERER)
 			-- Initialization of `Current'
 		require
 			not a_list.is_empty
@@ -43,12 +43,6 @@ feature -- Implementation
 
 	current_choice_index: INTEGER
 			-- The current position in `choices'
-
-	on_click
-			-- <Precursor>
-		do
-
-		end
 
 invariant
 

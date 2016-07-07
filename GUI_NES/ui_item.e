@@ -7,9 +7,12 @@ note
 deferred class
 	UI_ITEM
 
+inherit
+	UI_CONSTANTS
+
 feature -- Access
 
-	label: STRING
+	label: READABLE_STRING_GENERAL
 			-- The text to print before `Current'
 
 	x: INTEGER_32 assign set_x
@@ -37,16 +40,8 @@ feature -- Access
 			is_assign: y = a_y
 		end
 
-	is_active: BOOLEAN assign set_is_active
+	is_active: BOOLEAN
 			-- If `Current' is being edited by the user
-
-	set_is_active(a_value: BOOLEAN)
-			-- Assign `a_value' to `is_active'
-		do
-			is_active := a_value
-		ensure
-			is_assigned: is_active = a_value
-		end
 
 	is_selected: BOOLEAN assign set_is_selected
 		-- True is `Current' is selected (not necessary checked, see `is_checked')
@@ -64,8 +59,20 @@ feature -- Access
 
 	on_click
 			-- What to do when the user click or activate `Current'
-		deferred
+		do
+			active_action(RETURN)
+		end
 
+	activate
+			-- Set `Current' as `is_active'
+		do
+			is_active := True
+		end
+
+	desactivate
+			-- Set `Current' as not `is_active'
+		do
+			is_active := False
 		end
 
 	active_action (a_action: INTEGER)

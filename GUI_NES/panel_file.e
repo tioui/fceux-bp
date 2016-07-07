@@ -11,6 +11,8 @@ inherit
 	PANEL
 	rename
 		make as make_panel
+	redefine
+		active_action
 	end
 
 create
@@ -25,30 +27,24 @@ feature {NONE} -- Initialization
 			items.extend (create {UI_CHECKBOX}.make (x + margin, y + margin, "TEST BOX", a_renderer, font))
 			items.extend (create {UI_BUTTON}.make (x + margin, items.last.y + items.last.height + margin, 300, 50, "OK", a_font, a_renderer))
 			items.extend (create {UI_BUTTON}.make (x + margin, items.last.y + items.last.height + margin, 300, 50, "CANCEL", a_font, a_renderer))
-			items.extend (create {UI_LIST}.make (x + margin, items.last.y + items.last.height + margin, 10, "CHOOSE A FILE:", dir_content(".."), a_font, a_renderer))
+			create file_list.make(x + margin, items.last.y + items.last.height + margin, 10, "CHOOSE A FILE:", ".", a_font, a_renderer)
+			items.extend (file_list)
 		end
 
-	dir_content(a_path: STRING): LINKED_LIST[STRING_8]
-            -- Returns file and directory names for the directory `a_path'.
-        local
-        	l_dir: DIRECTORY
-        do
-        	create Result.make
-        	create l_dir.make (a_path)
-            across
-                l_dir.entries as ic
-            loop
-                Result.extend (ic.item.name.as_string_8)
-            end
-        end
+feature -- Access
 
-	on_key_pressed(a_timestamp: NATURAL_32; a_key_state:GAME_KEY_STATE; a_window:GAME_WINDOW_RENDERED)
+	active_action (a_action: INTEGER)
 			-- <Precursor>
 		do
-			if a_key_state.is_return then
-				
+			Precursor {PANEL}(a_action)
+			if file_list.is_active and file_list.is_done then
+				file_list.desactivate
 			end
 		end
+
+feature {NONE} -- Implementation
+
+	file_list:FILE_LIST
 
 
 invariant
